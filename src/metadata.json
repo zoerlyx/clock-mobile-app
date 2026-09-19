@@ -1,0 +1,6 @@
+{
+  "name": "CLOCK",
+  "description": "A precision mobile-first time utility app featuring Alarm, World Clock, Timer, and Stopwatch with persistent local storage and 3D visual design.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
