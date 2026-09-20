@@ -30,6 +30,25 @@ export const WorldClockItem: React.FC<WorldClockItemProps> = ({
     displayTime = `${info.hours24.toString().padStart(2, '0')}:${info.minutes.toString().padStart(2, '0')}`;
   }
 
+  WorldClockItemProps) {
+  // Ref untuk menyimpan timestamp klik terakhir
+  const lastClickTimeRef = React.useRef<number>(0);
+
+  const handleClick = () => {
+    const now = Date.now();
+    const DOUBLE_CLICK_THRESHOLD = 300; // Rentang waktu dalam ms untuk dianggap double click
+
+    if (now - lastClickTimeRef.current < DOUBLE_CLICK_THRESHOLD) {
+      // Jika diklik 2x berturut-turut, picu aksi hapus
+      onDelete(location.id);
+      lastClickTimeRef.current = 0; // Reset
+    } else {
+      // Jika klik tunggal, picu aksi pilih/select
+      lastClickTimeRef.current = now;
+      onSelect(location.id);
+    }
+  };
+
 return (
     <div
       id={`world-clock-item-${location.id}`}
