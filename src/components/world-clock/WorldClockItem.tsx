@@ -47,10 +47,7 @@ return (
         <div>
           <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 truncate tracking-tight">
             {location.city}
-          </h3>
-          <p className="text-xs text-slate-400 dark:text-slate-500 font-normal truncate">
-            {location.country}
-          </p>
+          </h3> 
         </div>
 
         {/* Offset & Date aligned together */}
