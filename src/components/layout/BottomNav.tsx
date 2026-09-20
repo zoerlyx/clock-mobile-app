@@ -1,7 +1,7 @@
 import React from 'react';
 import { Bell, Globe, Timer, Watch } from 'lucide-react';
 import { AppTab } from '../../types';
-import { soundEngine } from '../../services/audio';
+
 
 interface BottomNavProps {
   currentTab: AppTab;
@@ -68,9 +68,10 @@ export const BottomNav: React.FC<BottomNavProps> = ({
               id={`nav-tab-${id}`}
               type="button"
               aria-label={label}
+            
               title={label}
               onClick={() => {
-                soundEngine.playClick(isActive ? 700 : 850);
+                
                 onSelectTab(id);
               }}
               className={`relative w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300 ${
