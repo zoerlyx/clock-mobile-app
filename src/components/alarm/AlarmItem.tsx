@@ -54,9 +54,6 @@ return (
           <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
             {alarm.label || 'Alarm'}
           </span>
-          <span className="text-[11px] font-medium text-slate-400 dark:text-slate-500">
-            {isRecurring ? 'Repeat' : 'Once'}
-          </span>
         </div>
       </div>
 
