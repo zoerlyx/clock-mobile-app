@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { WorldClockLocation } from '../../types';
 import { getTimezoneInfo } from '../../services/timezones';
 
@@ -30,26 +30,22 @@ export const WorldClockItem: React.FC<WorldClockItemProps> = ({
     displayTime = `${info.hours24.toString().padStart(2, '0')}:${info.minutes.toString().padStart(2, '0')}`;
   }
 
-  WorldClockItemProps) {
-  // Ref untuk menyimpan timestamp klik terakhir
-  const lastClickTimeRef = React.useRef<number>(0);
+  const lastClickTimeRef = useRef<number>(0);
 
   const handleClick = () => {
     const now = Date.now();
-    const DOUBLE_CLICK_THRESHOLD = 300; // Rentang waktu dalam ms untuk dianggap double click
+    const DOUBLE_CLICK_THRESHOLD = 300;
 
-    if (now - lastClickTimeRef.current < DOUBLE_CLICK_THRESHOLD) {
-      // Jika diklik 2x berturut-turut, picu aksi hapus
+    if (now - lastClickTimeRef.current < DOUBLE_CLICK_THRESHOLD) { 
       onDelete(location.id);
-      lastClickTimeRef.current = 0; // Reset
-    } else {
-      // Jika klik tunggal, picu aksi pilih/select
+      lastClickTimeRef.current = 0;
+    } else { 
       lastClickTimeRef.current = now;
       onSelect(location.id);
     }
   };
 
-return (
+  return (
     <div
       id={`world-clock-item-${location.id}`}
       onClick={handleClick}
@@ -69,7 +65,7 @@ return (
           </div>
 
           {/* Offset & Date aligned together */}
-          <div className="text-[11px] font-medium text-slate-400 dark:text-slate-500 pt-1">
+          <div className="text-[11px] font-medium text-slate-400 dark:text-slate-500 pt-0">
             {info.offsetDiffStr && <span>{info.offsetDiffStr} / </span>}
             <span>{info.dateStr}</span>
           </div>
@@ -79,7 +75,7 @@ return (
         <div className="flex items-center gap-3">
           <div className="text-right">
             <div className="flex items-baseline justify-end gap-1">
-              <span className="text-3xl sm:text-4xl font-light font-mono text-slate-900 dark:text-slate-100 tracking-tight">
+              <span className="text-3xl sm:text-3xl font-light font-mono text-slate-900 dark:text-slate-100 tracking-tight">
                 {displayTime}
               </span>
               {!militaryTime && (
