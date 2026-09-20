@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Play, Pause, RotateCcw, Plus, Bookmark, BellRing } from 'lucide-react';
+import { Play, Pause, RotateCcw, Bookmark, BellRing, Plus } from 'lucide-react';
 import { TimerPreset, ActiveTimerState, TimerStatus } from '../../types';
 import { ThreeTimerRing } from '../3d/ThreeTimerRing';
 import { PresetList } from './PresetList';
@@ -173,8 +173,7 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
     return `${hStr}${mStr}:${sStr}`;
   };
 
-  const progressFraction =
-    totalDuration > 0 ? remainingSeconds / totalDuration : 0;
+  const progressFraction = totalDuration > 0 ? remainingSeconds / totalDuration : 0;
 
   return (
     <div className="flex flex-col h-full overflow-y-auto px-6 pt-8 pb-32 space-y-5">
@@ -198,30 +197,14 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
               <span className="text-[10px] tracking-wider text-slate-400 dark:text-slate-500 font-semibold mb-1.5">
                 HOURS
               </span>
-              <div className="w-18 h-18 sm:w-20 sm:h-20 rounded-3xl bg-slate-50 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 flex items-center justify-center font-mono text-3xl sm:text-4xl font-light text-slate-900 dark:text-slate-100 shadow-xs">
-                {setHours.toString().padStart(2, '0')}
-              </div>
-              <div className="flex gap-1 mt-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    soundEngine.playClick(600);
-                    setSetHours((h) => Math.min(23, h + 1));
-                  }}
-                  className="px-2.5 py-1 rounded-xl bg-blue-50 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-slate-700 text-xs font-medium text-blue-700 dark:text-blue-300 border border-blue-100/60 dark:border-slate-700"
-                >
-                  +1
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    soundEngine.playClick(500);
-                    setSetHours((h) => Math.max(0, h - 1));
-                  }}
-                  className="px-2.5 py-1 rounded-xl bg-blue-50 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-slate-700 text-xs font-medium text-blue-700 dark:text-blue-300 border border-blue-100/60 dark:border-slate-700"
-                >
-                  -1
-                </button>
+              <input
+                type="number"
+                min={0}
+                max={23}
+                value={setHours.toString().padStart(2, '0')}
+                onChange={(e) => setSetHours(Math.max(0, Math.min(23, Number(e.target.value) || 0)))}
+                className="w-18 h-18 sm:w-20 sm:h-20 rounded-3xl bg-slate-50 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 flex items-center justify-center font-mono text-3xl sm:text-4xl font-light text-slate-900 dark:text-slate-100 shadow-xs text-center focus:outline-none focus:ring-2 focus:ring-blue-500/50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
               </div>
             </div>
 
@@ -232,31 +215,14 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
               <span className="text-[10px] tracking-wider text-slate-400 dark:text-slate-500 font-semibold mb-1.5">
                 MINUTES
               </span>
-              <div className="w-18 h-18 sm:w-20 sm:h-20 rounded-3xl bg-slate-50 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 flex items-center justify-center font-mono text-3xl sm:text-4xl font-light text-slate-900 dark:text-slate-100 shadow-xs">
-                {setMinutes.toString().padStart(2, '0')}
-              </div>
-              <div className="flex gap-1 mt-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    soundEngine.playClick(600);
-                    setSetMinutes((m) => Math.min(59, m + 1));
-                  }}
-                  className="px-2.5 py-1 rounded-xl bg-blue-50 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-slate-700 text-xs font-medium text-blue-700 dark:text-blue-300 border border-blue-100/60 dark:border-slate-700"
-                >
-                  +1
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    soundEngine.playClick(500);
-                    setSetMinutes((m) => Math.max(0, m - 1));
-                  }}
-                  className="px-2.5 py-1 rounded-xl bg-blue-50 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-slate-700 text-xs font-medium text-blue-700 dark:text-blue-300 border border-blue-100/60 dark:border-slate-700"
-                >
-                  -1
-                </button>
-              </div>
+              <input
+                type="number"
+                min={0}
+                max={59}
+                value={setMinutes.toString().padStart(2, '0')}
+                onChange={(e) => setSetMinutes(Math.max(0, Math.min(59, Number(e.target.value) || 0)))}
+                className="w-18 h-18 sm:w-20 sm:h-20 rounded-3xl bg-slate-50 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 flex items-center justify-center font-mono text-3xl sm:text-4xl font-light text-slate-900 dark:text-slate-100 shadow-xs text-center focus:outline-none focus:ring-2 focus:ring-blue-500/50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
             </div>
 
             <div className="text-2xl font-light text-slate-300 dark:text-slate-600 mb-6">:</div>
@@ -266,55 +232,18 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
               <span className="text-[10px] tracking-wider text-slate-400 dark:text-slate-500 font-semibold mb-1.5">
                 SECONDS
               </span>
-              <div className="w-18 h-18 sm:w-20 sm:h-20 rounded-3xl bg-slate-50 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 flex items-center justify-center font-mono text-3xl sm:text-4xl font-light text-slate-900 dark:text-slate-100 shadow-xs">
-                {setSeconds.toString().padStart(2, '0')}
-              </div>
-              <div className="flex gap-1 mt-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    soundEngine.playClick(600);
-                    setSetSeconds((s) => Math.min(59, s + 1));
-                  }}
-                  className="px-2.5 py-1 rounded-xl bg-blue-50 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-slate-700 text-xs font-medium text-blue-700 dark:text-blue-300 border border-blue-100/60 dark:border-slate-700"
-                >
-                  +1
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    soundEngine.playClick(500);
-                    setSetSeconds((s) => Math.max(0, s - 1));
-                  }}
-                  className="px-2.5 py-1 rounded-xl bg-blue-50 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-slate-700 text-xs font-medium text-blue-700 dark:text-blue-300 border border-blue-100/60 dark:border-slate-700"
-                >
-                  -1
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Quick preset capsules */}
-          <div className="flex items-center gap-1.5 my-3">
-            {[1, 5, 10, 15, 25, 30].map((mins) => (
-              <button
-                key={mins}
-                type="button"
-                onClick={() => {
-                  soundEngine.playClick(750);
-                  setSetMinutes(mins);
-                  setSetHours(0);
-                  setSetSeconds(0);
-                }}
-                className="px-3 py-1.5 rounded-full bg-blue-50 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-slate-700 text-xs font-medium text-blue-700 dark:text-blue-300 border border-blue-100/80 dark:border-slate-700 transition-colors"
-              >
-                {mins}m
-              </button>
-            ))}
-          </div>
+              <input
+                type="number"
+                min={0}
+                max={59}
+                value={setSeconds.toString().padStart(2, '0')}
+                onChange={(e) => setSetSeconds(Math.max(0, Math.min(59, Number(e.target.value) || 0)))}
+                className="w-18 h-18 sm:w-20 sm:h-20 rounded-3xl bg-slate-50 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 flex items-center justify-center font-mono text-3xl sm:text-4xl font-light text-slate-900 dark:text-slate-100 shadow-xs text-center focus:outline-none focus:ring-2 focus:ring-blue-500/50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
+          </div> 
 
           {/* Action Buttons */}
-          <div className="grid grid-cols-2 gap-3 w-full max-w-xs mt-4">
+          <div className="grid grid-cols-2 gap-3 w-full max-w-xs mt-8">
             <button
               type="button"
               onClick={() => {
@@ -348,7 +277,7 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
         </div>
       ) : (
         /* Active Running / Paused Ring */
-        <div className="flex flex-col items-center py-6 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[36px] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] relative overflow-hidden">
+        <div className="flex flex-col min-h-110 items-center py-6 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[36px] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] relative overflow-hidden">
           <div className="relative flex items-center justify-center my-2">
             <ThreeTimerRing
               progress={progressFraction}
@@ -376,22 +305,8 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
             </div>
           </div>
 
-          {/* Quick +1 Min Button */}
-          {status !== 'finished' && (
-            <div className="mt-2 mb-4">
-              <button
-                type="button"
-                onClick={handleAddMinute}
-                className="px-3.5 py-1.5 rounded-full bg-blue-50 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-slate-700 text-xs font-medium text-blue-700 dark:text-blue-300 border border-blue-100 dark:border-slate-700 flex items-center gap-1 transition-all active:scale-95"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                +1 min
-              </button>
-            </div>
-          )}
-
           {/* Controls */}
-          <div className="flex items-center justify-center gap-3 w-full max-w-xs mt-1">
+          <div className="flex items-center justify-center gap-3 w-full max-w-xs mt-8">
             <button
               id="reset-timer-btn"
               type="button"
