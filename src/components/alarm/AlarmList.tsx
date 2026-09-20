@@ -67,7 +67,7 @@ export const AlarmList: React.FC<AlarmListProps> = ({
               title={darkMode ? "Mode Terang" : "Mode Gelap"}
               aria-label={darkMode ? "Beralih ke mode terang" : "Beralih ke mode gelap"}
             >
-              {darkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4" />}
+              {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </button>
           )}
 
