@@ -62,65 +62,36 @@ export const WorldClockList: React.FC<WorldClockListProps> = ({
           Add City
         </button>
       </div>
-
 <div
   id="local-time-card"
-  className="relative overflow-hidden rounded-[32px] p-24 bg-gradient-to-br from-blue-50/90 via-sky-50/50 to-white dark:from-slate-900 dark:via-blue-950/30 dark:to-slate-900 border border-blue-100/60 dark:border-slate-800 shadow-[0_12px_36px_rgba(37,99,235,0.06)] dark:shadow-[0_12px_36px_rgba(0,0,0,0.4)]"
+  className="relative overflow-hidden rounded-3xl min-h-[160px] p-5 sm:p-6 bg-gradient-to-br from-blue-50/90 via-sky-50/40 to-white dark:from-slate-900 dark:via-blue-950/20 dark:to-slate-900 border border-blue-100/70 dark:border-slate-800 shadow-[0_8px_30px_rgba(37,99,235,0.06)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] flex flex-col items-center justify-center gap-3 transition-all duration-300"
 >
-  {/* Baris Atas Horizontal: Kiri (Icon + Local Time) | Kanan (Tanggal) */}
-  <div className="flex items-center justify-between w-full pb-4">
-    <div className="inline-flex items-center gap-2 text-xs font-semibold text-blue-900 dark:text-blue-300 uppercase tracking-wider">
-      <MapPin className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
-      <span>Local Time</span>
+  {/* Ambient Background Glow Effect */}
+  <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-400/10 dark:bg-blue-600/10 rounded-full blur-2xl pointer-events-none" />
+
+    {/* Main Time Row: Berada dalam 1 Grup Rata Tengah (Bawah) */}
+  <div className="flex items-baseline justify-center gap-2 relative z-10 w-full">
+    {/* Grup HH:MM:SS */}
+    <div className="flex items-baseline font-mono text-4xl sm:text-5xl font-light text-slate-900 dark:text-slate-50 tracking-tight leading-none">
+      <span>{localDisplayTime}</span>
+      <span>:{localInfo.seconds.toString().padStart(2, '0')}</span>
     </div>
 
-    <span className="text-[11px] font-medium px-3 py-1 rounded-full bg-white/90 dark:bg-slate-800 text-blue-800 dark:text-blue-300 border border-blue-100/80 dark:border-slate-700 shadow-xs">
-      {localInfo.dateStr}
+    {/* Indikator AM/PM */}
+    {!militaryTime && (
+      <span className="text-xs sm:text-sm font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider shrink-0">
+        {localInfo.amPmStr}
+      </span>
+    )}
+  </div>
+
+  {/* Header Row: Kota / Tanggal (Atas) */}
+  <div className="flex items-center justify-center relative z-10 w-full text-center">
+    <span className="text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-300 tracking-tight truncate">
+      {localTimezone.split('/').pop()?.replace(/_/g, ' ')} / {localInfo.dateStr}
     </span>
-  </div>
-
-  {/* Baris Bawah: Grid 2 Kolom (2/3 dan 1/3) */}
-  <div className="grid grid-cols-3 items-center gap-4 pt-2 border-t border-blue-100/40 dark:border-slate-800/60">
-    {/* Kolom Kiri (2/3): Jam dan Menit */}
-    <div className="col-span-2 flex items-baseline">
-      <span className="text-4xl sm:text-5xl font-light font-mono text-slate-900 dark:text-slate-100 tracking-tight leading-none">
-        {localDisplayTime}
-      </span>
-    </div>
-
-    {/* Kolom Kanan (1/3): Terbagi 2 secara vertikal */}
-    <div className="col-span-1 flex flex-col justify-center items-end text-right space-y-1">
-      {/* Atas: Nama Kota / Timezone */}
-      <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 truncate max-w-full">
-        {localTimezone.split('/').pop()?.replace(/_/g, ' ')}
-      </span>
-
-      {/* Bawah: Detik & AM/PM */}
-      <div className="flex items-baseline justify-end gap-1">
-        <span className="text-sm font-mono text-slate-400 dark:text-slate-500 font-medium">
-          :{localInfo.seconds.toString().padStart(2, '0')}
-        </span>
-        {!militaryTime && (
-          <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase">
-            {localInfo.amPmStr}
-          </span>
-        )}
-      </div>
-    </div>
-  </div>
-</div>
-
-      {/* 3D Pearl-White Globe */}
-      <div className="py-1 flex flex-col items-center justify-center">
-        <ThreeGlobe
-          locations={locations}
-          selectedLocationId={selectedLocationId}
-          onSelectLocation={(id) => setSelectedLocationId(id)}
-          size={230}
-          enabled={enable3D}
-        />
-      </div>
-
+  </div> 
+</div> 
       {/* Saved Cities List */}
       <div className="space-y-3">
         <div className="flex items-center justify-between px-1">
