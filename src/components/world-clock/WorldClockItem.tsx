@@ -1,5 +1,4 @@
 import React from 'react';
-import { Sun, Moon, Trash2 } from 'lucide-react';
 import { WorldClockLocation } from '../../types';
 import { getTimezoneInfo } from '../../services/timezones';
 
