@@ -7,6 +7,7 @@ import { PresetModal } from './PresetModal';
 import { soundEngine } from '../../services/audio';
 import { NotificationManager } from '../../services/notifications';
 import { saveActiveTimer } from '../../services/storage';
+import { X, ChevronUp, ChevronDown } from 'lucide-react';
 
 interface TimerDisplayProps {
   initialState: ActiveTimerState | null;
@@ -197,6 +198,13 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
               <span className="text-[10px] tracking-wider text-slate-400 dark:text-slate-500 font-semibold mb-1.5">
                 HOURS
               </span>
+              <button
+                type="button"
+                onClick={() => setSetHours(Math.min(23, (Number(setHours) || 0) + 1))}
+                className="p-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-colors mb-1"
+              >
+                <ChevronUp className="w-5 h-5" />
+              </button>
               <input
                 type="number"
                 min={0}
@@ -205,16 +213,29 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
                 onChange={(e) => setSetHours(Math.max(0, Math.min(23, Number(e.target.value) || 0)))}
                 className="w-18 h-18 sm:w-20 sm:h-20 rounded-3xl bg-slate-50 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 flex items-center justify-center font-mono text-3xl sm:text-4xl font-light text-slate-900 dark:text-slate-100 shadow-xs text-center focus:outline-none focus:ring-2 focus:ring-blue-500/50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               />
-              </div>
+              <button
+                type="button"
+                onClick={() => setSetHours(Math.max(0, (Number(setHours) || 0) - 1))}
+                className="p-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-colors mt-1"
+              >
+                <ChevronDown className="w-5 h-5" />
+              </button>
             </div>
 
-            <div className="text-2xl font-light text-slate-300 dark:text-slate-600 mb-6">:</div>
+            <div className="text-2xl font-light text-slate-300 dark:text-slate-600">:</div>
 
             {/* Minutes */}
             <div className="flex flex-col items-center">
               <span className="text-[10px] tracking-wider text-slate-400 dark:text-slate-500 font-semibold mb-1.5">
                 MINUTES
               </span>
+              <button
+                type="button"
+                onClick={() => setSetMinutes(Math.min(59, (Number(setMinutes) || 0) + 1))}
+                className="p-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-colors mb-1"
+              >
+                <ChevronUp className="w-5 h-5" />
+              </button>
               <input
                 type="number"
                 min={0}
@@ -223,15 +244,29 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
                 onChange={(e) => setSetMinutes(Math.max(0, Math.min(59, Number(e.target.value) || 0)))}
                 className="w-18 h-18 sm:w-20 sm:h-20 rounded-3xl bg-slate-50 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 flex items-center justify-center font-mono text-3xl sm:text-4xl font-light text-slate-900 dark:text-slate-100 shadow-xs text-center focus:outline-none focus:ring-2 focus:ring-blue-500/50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               />
+              <button
+                type="button"
+                onClick={() => setSetMinutes(Math.max(0, (Number(setMinutes) || 0) - 1))}
+                className="p-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-colors mt-1"
+              >
+                <ChevronDown className="w-5 h-5" />
+              </button>
             </div>
 
-            <div className="text-2xl font-light text-slate-300 dark:text-slate-600 mb-6">:</div>
+            <div className="text-2xl font-light text-slate-300 dark:text-slate-600">:</div>
 
             {/* Seconds */}
             <div className="flex flex-col items-center">
               <span className="text-[10px] tracking-wider text-slate-400 dark:text-slate-500 font-semibold mb-1.5">
                 SECONDS
               </span>
+              <button
+                type="button"
+                onClick={() => setSetSeconds(Math.min(59, (Number(setSeconds) || 0) + 1))}
+                className="p-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-colors mb-1"
+              >
+                <ChevronUp className="w-5 h-5" />
+              </button>
               <input
                 type="number"
                 min={0}
@@ -240,7 +275,17 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
                 onChange={(e) => setSetSeconds(Math.max(0, Math.min(59, Number(e.target.value) || 0)))}
                 className="w-18 h-18 sm:w-20 sm:h-20 rounded-3xl bg-slate-50 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 flex items-center justify-center font-mono text-3xl sm:text-4xl font-light text-slate-900 dark:text-slate-100 shadow-xs text-center focus:outline-none focus:ring-2 focus:ring-blue-500/50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               />
-          </div> 
+              <button
+                type="button"
+                onClick={() => setSetSeconds(Math.max(0, (Number(setSeconds) || 0) - 1))}
+                className="p-1 text-blue-500 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition-colors mt-1"
+              >
+                <ChevronDown className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </div>
+) : null}
 
           {/* Action Buttons */}
           <div className="grid grid-cols-2 gap-3 w-full max-w-xs mt-8">
