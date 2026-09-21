@@ -340,7 +340,7 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
               </span>
 
               {status === 'finished' && (
-                <div className="mt-4 flex items-center gap-1 text-xs font-semibold text-blue-600 animate-bounce">
+                <div className="mt-4 flex items-center gap-1 text-xs font-semibold text-blue-600 animate-pulse">
                   <BellRing className="w-3.5 h-3.5" />
                   Finished
                 </div>
