@@ -166,14 +166,17 @@ export const PresetModal: React.FC<PresetModalProps> = ({
           </div>
         </div>
 
-        {/* Delete Preset Action (Hanya muncul saat mode Edit / initialPreset ada) */}
+        {/* Delete Preset Action (Hanya muncul jika sedang mengedit preset yang sudah ada) */}
         {initialPreset && (
           <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800">
             <button
               type="button"
               onClick={() => {
-                if (window.confirm(`Yakin ingin menghapus preset "${name || 'ini'}"?`)) {
-                  onDeletePreset?.(initialPreset.id);
+                if (window.confirm(`Yakin ingin menghapus preset "${initialPreset.name}"?`)) {
+                  soundEngine?.playClick?.(400);
+                  if (onDeletePreset) {
+                    onDeletePreset(initialPreset.id);
+                  }
                   onClose();
                 }
               }}
