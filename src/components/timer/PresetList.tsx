@@ -6,9 +6,7 @@ import { soundEngine } from '../../services/audio';
 interface PresetListProps {
   presets: TimerPreset[];
   onSelectPreset: (preset: TimerPreset) => void;
-  onAddPreset: () => void;
-  onEditPreset: (preset: TimerPreset) => void;
-  onDeletePreset: (id: string) => void;
+  onAddPreset: () => void; 
 }
 
 export const PresetList: React.FC<PresetListProps> = ({
