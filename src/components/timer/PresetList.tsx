@@ -1,5 +1,5 @@
 import React from 'react';
-import { Play, Plus, Edit2, Trash2 } from 'lucide-react';
+import { Play, Plus} from 'lucide-react';
 import { TimerPreset } from '../../types';
 import { soundEngine } from '../../services/audio';
 
@@ -15,7 +15,7 @@ export const PresetList: React.FC<PresetListProps> = ({
   presets,
   onSelectPreset,
   onAddPreset,
-  
+
 }) => {
   const formatDuration = (totalSec: number) => {
     const h = Math.floor(totalSec / 3600);
