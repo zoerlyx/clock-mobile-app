@@ -284,7 +284,7 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
               </button>
             </div>
           </div>
-          
+
           {/* Action Buttons */}
           <div className="grid grid-cols-2 gap-3 w-full max-w-xs mt-8">
             <button
@@ -340,7 +340,7 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
               </span>
 
               {status === 'finished' && (
-                <div className="mt-2 flex items-center gap-1 text-xs font-semibold text-blue-600 animate-bounce">
+                <div className="mt-4 flex items-center gap-1 text-xs font-semibold text-blue-600 animate-bounce">
                   <BellRing className="w-3.5 h-3.5" />
                   Finished
                 </div>
