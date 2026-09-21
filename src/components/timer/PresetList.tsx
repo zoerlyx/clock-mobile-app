@@ -70,33 +70,7 @@ export const PresetList: React.FC<PresetListProps> = ({
                 <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate">
                   {preset.name}
                 </span>
-                <div
-                  className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <button
-                    type="button"
-                    onClick={() => {
-                      soundEngine.playClick(750);
-                      onEditPreset(preset);
-                    }}
-                    className="p-1 rounded text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
-                    title="Edit"
-                  >
-                    <Edit2 className="w-3 h-3" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      soundEngine.playClick(400);
-                      onDeletePreset(preset.id);
-                    }}
-                    className="p-1 rounded text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
-                    title="Delete"
-                  >
-                    <Trash2 className="w-3 h-3" />
-                  </button>
-                </div>
+                
               </div>
 
               <div className="mt-3 flex items-baseline justify-between">
