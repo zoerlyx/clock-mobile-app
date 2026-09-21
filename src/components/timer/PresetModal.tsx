@@ -8,6 +8,8 @@ interface PresetModalProps {
   onClose: () => void;
   onSave: (presetData: { id?: string; name: string; duration: number }) => void;
   presetToEdit?: TimerPreset | null;
+  onDeletePreset?: (id: string) => void;
+  initialPreset?: TimerPreset | null;  
 }
 
 export const PresetModal: React.FC<PresetModalProps> = ({
