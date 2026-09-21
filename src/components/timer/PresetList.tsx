@@ -1,19 +1,22 @@
 import React from 'react';
-import { Play, Plus} from 'lucide-react';
+import { Play, Plus, Edit2, Trash2 } from 'lucide-react';
 import { TimerPreset } from '../../types';
 import { soundEngine } from '../../services/audio';
 
 interface PresetListProps {
   presets: TimerPreset[];
   onSelectPreset: (preset: TimerPreset) => void;
-  onAddPreset: () => void; 
+  onAddPreset: () => void;
+  onEditPreset: (preset: TimerPreset) => void;
+  onDeletePreset: (id: string) => void;
 }
 
 export const PresetList: React.FC<PresetListProps> = ({
   presets,
   onSelectPreset,
   onAddPreset,
-
+  onEditPreset,
+  onDeletePreset,
 }) => {
   const formatDuration = (totalSec: number) => {
     const h = Math.floor(totalSec / 3600);
@@ -28,8 +31,7 @@ export const PresetList: React.FC<PresetListProps> = ({
     }
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
-
-  return (
+return (
     <div className="space-y-3">
       <div className="flex items-center justify-between px-1">
         <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
@@ -58,8 +60,8 @@ export const PresetList: React.FC<PresetListProps> = ({
             <div
               key={preset.id}
               onClick={() => {
-                soundEngine.playClick(850);
-                onSelectPreset(preset);
+                soundEngine.playClick(750);
+                onEditPreset(preset);
               }}
               className="group relative overflow-hidden rounded-3xl p-4 bg-white dark:bg-slate-900 hover:bg-blue-50/30 dark:hover:bg-slate-800/80 border border-slate-100/90 dark:border-slate-800 hover:border-blue-200/80 dark:hover:border-slate-700 cursor-pointer transition-all shadow-[0_4px_16px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.4)] flex flex-col justify-between"
             >
@@ -67,16 +69,23 @@ export const PresetList: React.FC<PresetListProps> = ({
                 <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate">
                   {preset.name}
                 </span>
-                
-              </div>
+              </div> 
 
               <div className="mt-3 flex items-baseline justify-between">
                 <span className="font-mono text-base font-light text-slate-900 dark:text-slate-100">
                   {formatDuration(preset.duration)}
                 </span>
-                <span className="p-1.5 rounded-full bg-blue-50 dark:bg-slate-800 text-blue-600 dark:text-blue-400 group-hover:bg-blue-600 group-hover:text-white dark:group-hover:bg-blue-600 dark:group-hover:text-white transition-colors">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    soundEngine.playClick(850);
+                    onSelectPreset(preset);
+                  }}
+                  className="p-1.5 rounded-full bg-blue-50 dark:bg-slate-800 text-blue-600 dark:text-blue-400 group-hover:bg-blue-600 group-hover:text-white dark:group-hover:bg-blue-600 dark:group-hover:text-white transition-colors"
+                >
                   <Play className="w-3 h-3 fill-current" />
-                </span>
+                </button>
               </div>
             </div>
           ))}
