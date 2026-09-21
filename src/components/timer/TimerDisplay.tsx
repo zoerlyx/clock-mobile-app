@@ -284,9 +284,7 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
               </button>
             </div>
           </div>
-        </div>
-) : null}
-
+          
           {/* Action Buttons */}
           <div className="grid grid-cols-2 gap-3 w-full max-w-xs mt-8">
             <button
