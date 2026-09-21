@@ -15,8 +15,7 @@ export const PresetList: React.FC<PresetListProps> = ({
   presets,
   onSelectPreset,
   onAddPreset,
-  onEditPreset,
-  onDeletePreset,
+  
 }) => {
   const formatDuration = (totalSec: number) => {
     const h = Math.floor(totalSec / 3600);
