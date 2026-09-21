@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, ChevronUp, ChevronDown } from 'lucide-react';
+import { X, ChevronUp, ChevronDown, Trash2 } from 'lucide-react';
 import { TimerPreset } from '../../types';
 import { soundEngine } from '../../services/audio';
 
@@ -161,6 +161,25 @@ export const PresetModal: React.FC<PresetModalProps> = ({
             </button>
           </div>
         </div>
+
+        {/* Delete Preset Action (Hanya muncul saat mode Edit / initialPreset ada) */}
+        {initialPreset && (
+          <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+            <button
+              type="button"
+              onClick={() => {
+                if (window.confirm(`Yakin ingin menghapus preset "${name || 'ini'}"?`)) {
+                  onDeletePreset?.(initialPreset.id);
+                  onClose();
+                }
+              }}
+              className="w-full py-2.5 rounded-2xl bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/50 font-medium text-xs transition-colors flex items-center justify-center gap-1.5"
+            >
+              <Trash2 className="w-4 h-4" />
+              Delete Preset
+            </button>
+          </div>
+        )}
 
         {/* Actions */}
         <div className="grid grid-cols-2 gap-3 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800">
