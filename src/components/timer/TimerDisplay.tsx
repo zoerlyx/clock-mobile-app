@@ -331,12 +331,13 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
 
             {/* Centered Digital Countdown */}
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none select-none">
-              <span className="text-4xl sm:text-5xl font-mono font-light tracking-tight text-slate-900 dark:text-slate-100">
-                {formatTime(remainingSeconds)}
-              </span>
-
+              
               <span className="text-xs font-semibold text-slate-400 dark:text-slate-500 mt-1">
                 {label || 'Timer'}
+              </span>
+
+              <span className="text-4xl sm:text-5xl font-mono font-light tracking-tight text-slate-900 dark:text-slate-100">
+                {formatTime(remainingSeconds)}
               </span>
 
               {status === 'finished' && (
