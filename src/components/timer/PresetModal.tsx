@@ -16,6 +16,8 @@ export const PresetModal: React.FC<PresetModalProps> = ({
   isOpen,
   onClose,
   onSave,
+  onDeletePreset, 
+  initialPreset,
   presetToEdit,
 }) => {
   const [name, setName] = useState('');
