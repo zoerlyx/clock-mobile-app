@@ -15,6 +15,7 @@ export const StopwatchDisplay: React.FC<StopwatchDisplayProps> = ({
   enable3D = true,
 }) => {
   // 1. Inisialisasi state murni dari props awal saja
+  const startedAtRef = useRef<number | null>(initialState?.startedAt || null);
   const [isRunning, setIsRunning] = useState(initialState?.isRunning || false);
   const [elapsedTime, setElapsedTime] = useState(initialState?.elapsedTime || 0);
   const [laps, setLaps] = useState<LapRecord[]>(initialState?.laps || []);
