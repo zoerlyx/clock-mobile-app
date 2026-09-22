@@ -16,7 +16,7 @@ export const PresetModal: React.FC<PresetModalProps> = ({
   isOpen,
   onClose,
   onSave,
-  onDeletePreset, 
+  onDeletePreset,
   initialPreset,
   presetToEdit,
 }) => {
