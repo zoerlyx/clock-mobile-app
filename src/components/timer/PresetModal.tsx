@@ -54,6 +54,8 @@ export const PresetModal: React.FC<PresetModalProps> = ({
     onClose();
   };
 
+  const activePreset = presetToEdit || initialPreset;
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/40 dark:bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
