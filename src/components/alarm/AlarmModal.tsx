@@ -258,7 +258,7 @@ export const AlarmModal: React.FC<AlarmModalProps> = ({
               value={label}
               onChange={(e) => setLabel(e.target.value)}
               placeholder="e.g. Work, Morning Run"
-              className="w-full px-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+              className="w-full px-4 py-2.5 mt-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm focus:outline-none focus:border-blue-500 transition-colors"
             />
           </div>
 
@@ -275,7 +275,7 @@ export const AlarmModal: React.FC<AlarmModalProps> = ({
                     key={day}
                     type="button"
                     onClick={() => handleToggleDay(day)}
-                    className={`py-2 rounded-xl text-xs font-semibold transition-all ${
+                    className={`py-2 mt-4 rounded-xl text-xs font-semibold transition-all ${
                       isActive
                         ? 'bg-blue-600 text-white shadow-xs'
                         : 'bg-blue-50/70 dark:bg-slate-800 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-slate-700'
@@ -317,7 +317,7 @@ export const AlarmModal: React.FC<AlarmModalProps> = ({
         </div>
 
         {/* Modal Bottom Actions */}
-        <div className="grid grid-cols-2 gap-3 pt-3 border-t border-slate-100 dark:border-slate-800 mt-1">
+        <div className="grid grid-cols-2 gap-3 pt-4 border-t border-slate-100 dark:border-slate-800 mt-4">
           <button
             type="button"
             onClick={onClose}
