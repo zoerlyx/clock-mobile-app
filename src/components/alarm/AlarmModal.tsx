@@ -293,27 +293,33 @@ export const AlarmModal: React.FC<AlarmModalProps> = ({
             <label className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
               Tone
             </label>
-            <div className="grid grid-cols-3 gap-1.5">
-              {SOUND_OPTIONS.map((opt) => (
-                <button
-                  key={opt.id}
-                  type="button"
-                  onClick={() => {
-                    soundEngine.playAlarmSoundOnce(opt.id);
-                    setSound(opt.id);
-                  }}
-                  className={`py-2 px-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition-all ${
-                    sound === opt.id
-                      ? 'bg-blue-600 text-white shadow-xs'
-                      : 'bg-blue-50/70 dark:bg-slate-800 text-blue-800 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-slate-700'
-                  }`}
-                >
-                  <span className="truncate">{opt.label}</span>
-                  {sound === opt.id && <Check className="w-3 h-3 ml-1 shrink-0" />}
-                </button>
-              ))}
+            <div className="relative">
+              <select
+                value={sound}
+                onChange={(e) => {
+                  const selectedId = e.target.value; // variabel e diambil dari parameter onChange
+                  setSound(selectedId);
+                  soundEngine.playAlarmSoundOnce(selectedId);
+                }}
+                className="w-full appearance-none px-3.5 py-2.5 rounded-xl text-xs font-semibold bg-slate-100/80 dark:bg-slate-800/80 text-slate-800 dark:text-slate-200 border border-slate-200/80 dark:border-slate-700/70 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all cursor-pointer pr-10"
+              >
+                {SOUND_OPTIONS.map((opt) => (
+                  <option
+                    key={opt.id}
+                    value={opt.id}
+                    className="bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 py-1"
+                  >
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+              
+              {/* Custom Dropdown Chevron Icon */}
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 dark:text-slate-500">
+                <ChevronDown className="w-4 h-4" />
+              </div>
             </div>
-          </div> 
+          </div>
         </div>
 
         {/* Modal Bottom Actions */}
