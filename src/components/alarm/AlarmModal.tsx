@@ -313,25 +313,7 @@ export const AlarmModal: React.FC<AlarmModalProps> = ({
                 </button>
               ))}
             </div>
-          </div>
-
-          {/* Delete Alarm option inside settings */}
-          {alarmToEdit && onDelete && (
-            <div className="pt-2">
-              <button
-                type="button"
-                onClick={() => {
-                  soundEngine.playClick(400);
-                  onDelete(alarmToEdit.id);
-                  onClose();
-                }}
-                className="w-full py-3 rounded-2xl bg-rose-50 dark:bg-rose-950/30 hover:bg-rose-100 dark:hover:bg-rose-950/50 text-rose-600 dark:text-rose-400 border border-rose-200/70 dark:border-rose-900/60 font-medium text-sm flex items-center justify-center gap-2 transition-colors"
-              >
-                <Trash2 className="w-4 h-4" />
-                Hapus Alarm
-              </button>
-            </div>
-          )}
+          </div> 
         </div>
 
         {/* Modal Bottom Actions */}
