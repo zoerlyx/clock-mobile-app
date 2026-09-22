@@ -9,7 +9,7 @@ interface PresetModalProps {
   onSave: (presetData: { id?: string; name: string; duration: number }) => void;
   presetToEdit?: TimerPreset | null;
   onDeletePreset?: (id: string) => void;
-  initialPreset?: TimerPreset | null;  
+  initialPreset?: TimerPreset | null;
 }
 
 export const PresetModal: React.FC<PresetModalProps> = ({
@@ -25,10 +25,15 @@ export const PresetModal: React.FC<PresetModalProps> = ({
   const [minutes, setMinutes] = useState(25);
   const [seconds, setSeconds] = useState(0);
 
+  // Ambil preset mana pun yang aktif/dilewatkan
+  const activePreset = presetToEdit || initialPreset;
+
   useEffect(() => {
-    if (presetToEdit) {
-      setName(presetToEdit.name);
-      const totalSec = presetToEdit.duration;
+    if (!isOpen) return;
+
+    if (activePreset) {
+      setName(activePreset.name);
+      const totalSec = activePreset.duration;
       setHours(Math.floor(totalSec / 3600));
       setMinutes(Math.floor((totalSec % 3600) / 60));
       setSeconds(totalSec % 60);
@@ -38,23 +43,32 @@ export const PresetModal: React.FC<PresetModalProps> = ({
       setMinutes(10);
       setSeconds(0);
     }
-  }, [presetToEdit, isOpen]);
+  }, [activePreset, isOpen]);
 
   if (!isOpen) return null;
 
   const handleSave = () => {
     const totalDuration = hours * 3600 + minutes * 60 + seconds;
     if (totalDuration <= 0) return;
-    soundEngine.playClick(950);
+
+    soundEngine?.playClick?.(950);
     onSave({
-      id: presetToEdit?.id,
+      id: activePreset?.id,
       name: name.trim() || `${minutes}m Timer`,
       duration: totalDuration,
     });
     onClose();
   };
 
-  const activePreset = presetToEdit || initialPreset;
+  const handleDelete = () => {
+    if (!activePreset?.id || !onDeletePreset) return;
+
+    if (window.confirm(`Yakin ingin menghapus preset "${activePreset.name}"?`)) {
+      soundEngine?.playClick?.(400);
+      onDeletePreset(activePreset.id);
+      onClose();
+    }
+  };
 
   return (
     <div
@@ -69,7 +83,7 @@ export const PresetModal: React.FC<PresetModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
           <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-            {presetToEdit ? 'Edit Preset' : 'New Preset'}
+            {activePreset ? 'Edit Preset' : 'New Preset'}
           </h2>
           <button
             type="button"
@@ -168,20 +182,12 @@ export const PresetModal: React.FC<PresetModalProps> = ({
           </div>
         </div>
 
-        {/* Delete Preset Action (Hanya muncul jika sedang mengedit preset yang sudah ada) */}
-        {initialPreset && (
+        {/* Delete Preset Button */}
+        {activePreset?.id && onDeletePreset && (
           <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800">
             <button
               type="button"
-              onClick={() => {
-                if (window.confirm(`Yakin ingin menghapus preset "${initialPreset.name}"?`)) {
-                  soundEngine?.playClick?.(400);
-                  if (onDeletePreset) {
-                    onDeletePreset(initialPreset.id);
-                  }
-                  onClose();
-                }
-              }}
+              onClick={handleDelete}
               className="w-full py-2.5 rounded-2xl bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/50 font-medium text-xs transition-colors flex items-center justify-center gap-1.5"
             >
               <Trash2 className="w-4 h-4" />

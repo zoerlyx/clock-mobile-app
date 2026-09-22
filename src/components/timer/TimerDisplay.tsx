@@ -419,6 +419,7 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
         onClose={() => setIsPresetModalOpen(false)}
         onSave={onSavePreset}
         presetToEdit={presetToEdit}
+        onDeletePreset={onDeletePreset} // Pengisian nilai dilakukan di sini
       />
     </div>
   );
