@@ -34,7 +34,7 @@ export const StopwatchDisplay: React.FC<StopwatchDisplayProps> = ({
     saveActiveStopwatch({
       elapsedTime,
       isRunning,
-      startedAt: isRunning ? Date.now() : null,
+      startedAt: isRunning ? startedAtRef.current : null,
       pausedAt: !isRunning && elapsedTime > 0 ? Date.now() : null,
       laps,
     });
@@ -80,12 +80,14 @@ export const StopwatchDisplay: React.FC<StopwatchDisplayProps> = ({
   const handleStart = () => {
     soundEngine.playClick(950);
     accumulatedTimeRef.current = elapsedTime;
+    startedAtRef.current = Date.now();
     setIsRunning(true);
   };
 
   const handlePause = () => {
     soundEngine.playClick(650);
     setIsRunning(false); 
+    startedAtRef.current = null;
     accumulatedTimeRef.current = elapsedTime;
   }; 
 
@@ -93,6 +95,7 @@ export const StopwatchDisplay: React.FC<StopwatchDisplayProps> = ({
     soundEngine.playClick(450);
     setIsRunning(false);
     setElapsedTime(0);
+    startedAtRef.current = null;
     accumulatedTimeRef.current = 0;
     lastStartTimeRef.current = null;
     lastSecondRef.current = 0;
