@@ -378,6 +378,7 @@ export function saveActiveStopwatch(state: StopwatchState | null): void {
   safeSetItem(STORAGE_KEYS.STOPWATCH, state);
 }
 
+
 // ----------------- Settings -----------------
 export function getSettings(): AppSettings {
   return safeGetItem<AppSettings>(STORAGE_KEYS.SETTINGS, DEFAULT_SETTINGS);
