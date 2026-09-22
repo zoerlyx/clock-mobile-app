@@ -294,15 +294,16 @@ export const AlarmModal: React.FC<AlarmModalProps> = ({
               Tone
             </label>
             <div className="relative">
-              <select
-                value={sound}
-                onChange={(e) => {
-                  const selectedId = e.target.value; // variabel e diambil dari parameter onChange
-                  setSound(selectedId);
-                  soundEngine.playAlarmSoundOnce(selectedId);
-                }}
-                className="w-full appearance-none px-3.5 py-2.5 rounded-xl text-xs font-semibold bg-slate-100/80 dark:bg-slate-800/80 text-slate-800 dark:text-slate-200 border border-slate-200/80 dark:border-slate-700/70 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all cursor-pointer pr-10"
-              >
+              <div className="relative">
+                <select
+                  value={sound}
+                  onChange={(e) => {
+                    const selectedId = e.target.value as Alarm['sound'];
+                    setSound(selectedId);
+                    soundEngine.playAlarmSoundOnce(selectedId);
+                  }}
+                  className="w-full appearance-none px-3.5 py-2.5 mt-4 rounded-xl text-xs font-semibold bg-slate-100/80 dark:bg-slate-800/80 text-slate-800 dark:text-slate-200 border border-slate-200/80 dark:border-slate-700/70 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all cursor-pointer pr-10"
+                >
                 {SOUND_OPTIONS.map((opt) => (
                   <option
                     key={opt.id}
@@ -321,9 +322,10 @@ export const AlarmModal: React.FC<AlarmModalProps> = ({
             </div>
           </div>
         </div>
+      </div>
 
         {/* Modal Bottom Actions */}
-        <div className="grid grid-cols-2 gap-3 pt-4 border-t border-slate-100 dark:border-slate-800 mt-4">
+        <div className="grid grid-cols-2 gap-3 pt-4 border-t border-slate-100 dark:border-slate-800 mt-4 mb-4 ">
           <button
             type="button"
             onClick={onClose}
