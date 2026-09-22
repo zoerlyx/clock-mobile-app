@@ -42,13 +42,14 @@ export const LapList: React.FC<LapListProps> = ({ laps }) => {
 
   return (
     <div className="space-y-2">
-      <div className="flex items-center justify-between px-3 text-[10px] font-semibold tracking-wider text-slate-400 dark:text-slate-500 uppercase">
-        <span>Lap</span>
-        <span>Split</span>
-        <span>Total</span>
+      {/* Header Alignment via Grid */}
+      <div className="grid grid-cols-12 px-4 text-xs font-semibold tracking-wider text-slate-400 dark:text-slate-500 uppercase">
+        <span className="col-span-5">Lap</span>
+        <span className="col-span-4 text-right pr-2">Split</span>
+        <span className="col-span-3 text-right">Total</span>
       </div>
 
-      <div className="space-y-1.5 max-h-56 overflow-y-auto pr-1">
+      <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
         {reversedLaps.map((lap) => {
           const isFastest = laps.length >= 2 && lap.lapTime === minLapTime;
           const isSlowest = laps.length >= 2 && lap.lapTime === maxLapTime;
@@ -56,7 +57,7 @@ export const LapList: React.FC<LapListProps> = ({ laps }) => {
           return (
             <div
               key={lap.lapNumber}
-              className={`flex items-center justify-between px-4 py-3 rounded-2xl border text-xs font-mono transition-colors ${
+              className={`grid grid-cols-12 items-center px-4 py-3.5 rounded-2xl border font-mono transition-colors ${
                 isFastest
                   ? 'bg-blue-50/80 dark:bg-blue-950/40 border-blue-200 dark:border-blue-900/60 text-blue-900 dark:text-blue-300'
                   : isSlowest
@@ -64,25 +65,30 @@ export const LapList: React.FC<LapListProps> = ({ laps }) => {
                   : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 text-slate-700 dark:text-slate-300 shadow-xs'
               }`}
             >
-              <div className="flex items-center gap-2 font-sans font-semibold">
-                <span className="text-slate-900 dark:text-slate-100">#{lap.lapNumber}</span>
+              {/* Kolom 1: Lap Number + Badge (Fixed Col-Span 5) */}
+              <div className="col-span-5 flex items-center gap-1.5 font-sans font-bold text-sm min-w-0">
+                <span className="text-slate-900 dark:text-slate-100 text-base shrink-0">
+                  #{lap.lapNumber}
+                </span>
                 {isFastest && (
-                  <span className="inline-flex items-center gap-0.5 text-[9px] font-semibold px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900/60 text-blue-800 dark:text-blue-300 rounded-md">
-                    <Trophy className="w-2.5 h-2.5" /> Best
+                  <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 bg-blue-100 dark:bg-blue-900/60 text-blue-800 dark:text-blue-300 rounded-md shrink-0">
+                    <Trophy className="w-3 h-3" /> Best
                   </span>
                 )}
                 {isSlowest && (
-                  <span className="inline-flex items-center gap-0.5 text-[9px] font-semibold px-1.5 py-0.5 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-md">
-                    <TrendingDown className="w-2.5 h-2.5" /> Slow
+                  <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-md shrink-0">
+                    <TrendingDown className="w-3 h-3" /> Slow
                   </span>
                 )}
               </div>
 
-              <div className="font-semibold">
+              {/* Kolom 2: Split Time (Fixed Col-Span 4 & Alignment Terkunci) */}
+              <div className="col-span-4 text-right pr-2 font-semibold text-base tracking-tight whitespace-nowrap">
                 +{formatMs(lap.lapTime)}
               </div>
 
-              <div className="text-slate-400 dark:text-slate-500">
+              {/* Kolom 3: Total Time (Fixed Col-Span 3 & Alignment Terkunci) */}
+              <div className="col-span-3 text-right text-sm font-medium text-slate-400 dark:text-slate-500 whitespace-nowrap">
                 {formatMs(lap.totalTime)}
               </div>
             </div>

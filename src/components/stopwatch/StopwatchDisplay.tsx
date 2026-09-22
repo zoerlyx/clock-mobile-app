@@ -118,9 +118,9 @@ export const StopwatchDisplay: React.FC<StopwatchDisplayProps> = ({
   const minuteSubdialAngle = ((elapsedTime % 1800000) / 1800000) * 360;
 
   return (
-    <div className="flex flex-col h-full overflow-y-auto px-6 pt-8 pb-32 space-y-5">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+    <div className="flex flex-col h-full overflow-hidden px-6 pt-6 pb-6 space-y-4">
+      {/* Header Statis */}
+      <div className="flex items-center justify-between shrink-0">
         <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-2">
           Stopwatch
           {isRunning && (
@@ -129,10 +129,10 @@ export const StopwatchDisplay: React.FC<StopwatchDisplayProps> = ({
         </h1>
       </div>
 
-      {/* Analog + Digital Neo-Apple Stage */}
-      <div className="flex flex-col items-center py-6 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[36px] p-5 shadow-[0_8px_30px_rgba(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] relative overflow-hidden">
+      {/* Analog + Digital Neo-Apple Stage (Statis & Mengunci di Atas) */}
+      <div className="shrink-0 flex flex-col items-center py-5 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[32px] p-5 shadow-[0_8px_30px_rgba(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] relative overflow-hidden">
         {/* Analog Precision Dial */}
-        <div className="relative w-48 h-48 sm:w-56 sm:h-56 flex items-center justify-center select-none my-1">
+        <div className="relative w-44 h-44 sm:w-52 sm:h-52 flex items-center justify-center select-none my-1">
           <svg viewBox="0 0 200 200" className="w-full h-full filter drop-shadow-[0_8px_20px_rgba(0,0,0,0.04)] dark:drop-shadow-[0_8px_20px_rgba(0,0,0,0.4)]">
             {/* Outer Bezel */}
             <circle
@@ -235,7 +235,7 @@ export const StopwatchDisplay: React.FC<StopwatchDisplayProps> = ({
         </div>
 
         {/* Large Digital Readout */}
-        <div className="flex items-baseline justify-center gap-1 my-4">
+        <div className="flex items-baseline justify-center gap-1 my-3">
           <span className="text-4xl sm:text-5xl font-light font-mono text-slate-900 dark:text-slate-100 tracking-tight">
             {mStr}:{sStr}
           </span>
@@ -244,14 +244,14 @@ export const StopwatchDisplay: React.FC<StopwatchDisplayProps> = ({
           </span>
         </div>
 
-        {/* Buttons */}
-        <div className="flex items-center justify-center gap-3 w-full max-w-xs mt-2 mb-3">
+        {/* Buttons (Tetap terlihat sempurna) */}
+        <div className="flex items-center justify-center gap-3 w-full max-w-xs mt-1">
           {isRunning ? (
             <button
               id="stopwatch-lap-btn"
               type="button"
               onClick={handleLap}
-              className="flex-1 py-3.5 rounded-2xl bg-blue-50 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-slate-700 text-blue-700 dark:text-blue-300 font-medium text-xs flex items-center justify-center gap-1.5 border border-blue-100 dark:border-slate-700 shadow-xs transition-all active:scale-95"
+              className="flex-1 py-3 rounded-2xl bg-blue-50 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-slate-700 text-blue-700 dark:text-blue-300 font-medium text-xs flex items-center justify-center gap-1.5 border border-blue-100 dark:border-slate-700 shadow-xs transition-all active:scale-95 cursor-pointer"
             >
               <Flag className="w-4 h-4 text-blue-600 dark:text-blue-400" />
               Lap
@@ -262,7 +262,7 @@ export const StopwatchDisplay: React.FC<StopwatchDisplayProps> = ({
               type="button"
               onClick={handleReset}
               disabled={elapsedTime === 0}
-              className="flex-1 py-3.5 rounded-2xl bg-blue-50 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-slate-700 disabled:opacity-30 text-blue-700 dark:text-blue-300 font-medium text-xs flex items-center justify-center gap-1.5 border border-blue-100 dark:border-slate-700 transition-all active:scale-95"
+              className="flex-1 py-3 rounded-2xl bg-blue-50 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-slate-700 disabled:opacity-30 text-blue-700 dark:text-blue-300 font-medium text-xs flex items-center justify-center gap-1.5 border border-blue-100 dark:border-slate-700 transition-all active:scale-95 cursor-pointer"
             >
               <RotateCcw className="w-4 h-4 text-blue-600 dark:text-blue-400" />
               Reset
@@ -274,7 +274,7 @@ export const StopwatchDisplay: React.FC<StopwatchDisplayProps> = ({
               id="stopwatch-start-btn"
               type="button"
               onClick={handleStart}
-              className="flex-1 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/25 transition-all active:scale-98"
+              className="flex-1 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/25 transition-all active:scale-98 cursor-pointer"
             >
               <Play className="w-4 h-4 fill-current" />
               {elapsedTime > 0 ? 'Resume' : 'Start'}
@@ -284,7 +284,7 @@ export const StopwatchDisplay: React.FC<StopwatchDisplayProps> = ({
               id="stopwatch-pause-btn"
               type="button"
               onClick={handlePause}
-              className="flex-1 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/25 transition-all active:scale-98"
+              className="flex-1 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/25 transition-all active:scale-98 cursor-pointer"
             >
               <Pause className="w-4 h-4 fill-current" />
               Pause
@@ -293,8 +293,10 @@ export const StopwatchDisplay: React.FC<StopwatchDisplayProps> = ({
         </div>
       </div>
 
-      {/* Laps List */}
-      <LapList laps={laps} />
+      {/* Area Lap List (Scrollable secara independen) */}
+      <div className="flex-1 overflow-y-auto min-h-0 pr-1">
+        <LapList laps={laps} />
+      </div>
     </div>
   );
 };
