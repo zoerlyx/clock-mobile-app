@@ -22,19 +22,22 @@ export const StopwatchDisplay: React.FC<StopwatchDisplayProps> = ({
   const accumulatedTimeRef = useRef<number>(initialState?.elapsedTime || 0);
   const lastSecondRef = useRef<number>(0);
 
+  // Sync ref jika initialState berubah dari parent saat perpindahan halaman
+  // Sync state dari props jika halaman berpindah
   useEffect(() => {
-    saveActiveStopwatch({
-      elapsedTime,
-      isRunning,
-      startedAt: isRunning ? Date.now() : null,
-      pausedAt: !isRunning && elapsedTime > 0 ? Date.now() : null,
-      laps,
-    });
-  }, [elapsedTime, isRunning, laps]);
+    if (initialState) {
+      setElapsedTime(initialState.elapsedTime || 0);
+      setIsRunning(initialState.isRunning || false);
+      accumulatedTimeRef.current = initialState.elapsedTime || 0;
+    }
+  }, [initialState]);
 
-  // High precision timestamp animation loop
+  // High precision timestamp animation loop (FIXED)
   useEffect(() => {
-    if (!isRunning) return;
+    if (!isRunning) {
+      lastStartTimeRef.current = null;
+      return;
+    }
 
     lastStartTimeRef.current = performance.now();
     let animId: number;
@@ -44,6 +47,7 @@ export const StopwatchDisplay: React.FC<StopwatchDisplayProps> = ({
         const now = performance.now();
         const delta = now - lastStartTimeRef.current;
         const currentTotal = accumulatedTimeRef.current + delta;
+
         setElapsedTime(currentTotal);
 
         const currentSec = Math.floor(currentTotal / 1000);
@@ -59,6 +63,7 @@ export const StopwatchDisplay: React.FC<StopwatchDisplayProps> = ({
 
     return () => {
       cancelAnimationFrame(animId);
+      // Update nilai akumulasi hanya saat komponen di-unmount dalam posisi running
       if (lastStartTimeRef.current !== null) {
         const now = performance.now();
         accumulatedTimeRef.current += now - lastStartTimeRef.current;
@@ -75,6 +80,19 @@ export const StopwatchDisplay: React.FC<StopwatchDisplayProps> = ({
   const handlePause = () => {
     soundEngine.playClick(650);
     setIsRunning(false);
+    
+    // Kunci nilai akumulasi secara eksplisit saat pause!
+    accumulatedTimeRef.current = elapsedTime;
+    lastStartTimeRef.current = null;
+
+    // Paksa simpan status PAUSED (isRunning: false) ke storage
+    saveActiveStopwatch({
+      elapsedTime,
+      isRunning: false,
+      startedAt: null,
+      pausedAt: Date.now(),
+      laps,
+    });
   };
 
   const handleReset = () => {
@@ -118,7 +136,7 @@ export const StopwatchDisplay: React.FC<StopwatchDisplayProps> = ({
   const minuteSubdialAngle = ((elapsedTime % 1800000) / 1800000) * 360;
 
   return (
-    <div className="flex flex-col h-full overflow-hidden px-6 pt-6 pb-6 space-y-4">
+    <div className="flex flex-col h-full overflow-y-auto px-6 pt-8 pb-32 space-y-5">
       {/* Header Statis */}
       <div className="flex items-center justify-between shrink-0">
         <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-2">
