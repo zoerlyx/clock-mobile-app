@@ -109,8 +109,8 @@ export const AddCityModal: React.FC<AddCityModalProps> = ({
                   onClick={() => handleSelect(city)}
                   className={`flex items-center justify-between p-3.5 rounded-2xl border transition-all ${
                     isAdded
-                      ? 'bg-slate-50 dark:bg-slate-800/40 border-slate-100 dark:border-slate-800 opacity-50 cursor-default'
-                      : 'bg-white dark:bg-slate-850/90 border-slate-100 dark:border-slate-800 hover:border-blue-200 dark:hover:border-slate-700 hover:bg-blue-50/30 dark:hover:bg-slate-800 shadow-xs cursor-pointer'
+                      ? 'bg-slate-50 dark:bg-slate-800/40 border-slate-100 dark:border-slate-800/60 opacity-50 cursor-default'
+                      : 'bg-white dark:bg-slate-800/60 border-slate-100 dark:border-slate-800 hover:border-blue-200 dark:hover:border-slate-700 hover:bg-blue-50/30 dark:hover:bg-slate-800 shadow-xs cursor-pointer'
                   }`}
                 >
                   <div className="min-w-0 pr-2">
@@ -126,16 +126,18 @@ export const AddCityModal: React.FC<AddCityModalProps> = ({
 
                   <div className="flex items-center gap-3 shrink-0">
                     <div className="text-right">
-                      <div className="text-xs font-mono font-medium text-slate-800">
+                      {/* Jam Digital */}
+                      <div className="text-xs font-mono font-medium text-slate-800 dark:text-slate-200">
                         {info.timeStr} {info.amPmStr}
                       </div>
-                      <div className="text-[10px] text-slate-400 font-medium">
+                      {/* Selisih Waktu */}
+                      <div className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">
                         {info.offsetDiffStr}
                       </div>
                     </div>
 
                     {isAdded ? (
-                      <span className="p-1.5 rounded-full bg-blue-50 text-blue-600">
+                      <span className="p-1.5 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400">
                         <Check className="w-4 h-4" />
                       </span>
                     ) : (
