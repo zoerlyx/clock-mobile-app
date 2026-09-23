@@ -1,5 +1,10 @@
-import { Alarm, WorldClockLocation, TimerPreset, ActiveTimerState, StopwatchState } from '../types';
-import { getUserLocalTimezone, POPULAR_CITIES } from './timezones';
+import { 
+  Alarm, 
+  WorldClockLocation, 
+  TimerPreset, 
+  ActiveTimerState, 
+  StopwatchState 
+} from '../types';
 
 const STORAGE_KEYS = {
   ALARMS: 'clock_app_alarms_v1',
@@ -33,7 +38,7 @@ const DEFAULT_ALARMS: Alarm[] = [
     hour: 7,
     minute: 0,
     enabled: true,
-    repeatDays: [1, 2, 3, 4, 5], // Mon-Fri
+    repeatDays: [1, 2, 3, 4, 5],
     sound: 'radiance',
     vibration: true,
     createdAt: Date.now() - 86400000 * 3,
@@ -45,7 +50,7 @@ const DEFAULT_ALARMS: Alarm[] = [
     hour: 8,
     minute: 30,
     enabled: false,
-    repeatDays: [0, 6], // Sun, Sat
+    repeatDays: [0, 6],
     sound: 'chime',
     vibration: true,
     createdAt: Date.now() - 86400000 * 2,
@@ -57,7 +62,7 @@ const DEFAULT_ALARMS: Alarm[] = [
     hour: 22,
     minute: 45,
     enabled: true,
-    repeatDays: [0, 1, 2, 3, 4, 5, 6], // Everyday
+    repeatDays: [0, 1, 2, 3, 4, 5, 6],
     sound: 'bell',
     vibration: false,
     createdAt: Date.now() - 86400000,
@@ -124,50 +129,15 @@ const DEFAULT_WORLD_CLOCKS: WorldClockLocation[] = [
 ];
 
 const DEFAULT_TIMER_PRESETS: TimerPreset[] = [
-  {
-    id: 'preset-1',
-    name: 'Pomodoro Focus',
-    duration: 25 * 60,
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
-  },
-  {
-    id: 'preset-2',
-    name: 'Short Break',
-    duration: 5 * 60,
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
-  },
-  {
-    id: 'preset-3',
-    name: 'Power Nap',
-    duration: 20 * 60,
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
-  },
-  {
-    id: 'preset-4',
-    name: 'Boiled Egg (Soft)',
-    duration: 6 * 60,
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
-  },
-  {
-    id: 'preset-5',
-    name: 'Tea Steeping',
-    duration: 3 * 60,
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
-  },
-  {
-    id: 'preset-6',
-    name: 'Workout Interval',
-    duration: 90,
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
-  }
+  { id: 'preset-1', name: 'Pomodoro Focus', duration: 25 * 60, createdAt: Date.now(), updatedAt: Date.now() },
+  { id: 'preset-2', name: 'Short Break', duration: 5 * 60, createdAt: Date.now(), updatedAt: Date.now() },
+  { id: 'preset-3', name: 'Power Nap', duration: 20 * 60, createdAt: Date.now(), updatedAt: Date.now() },
+  { id: 'preset-4', name: 'Boiled Egg (Soft)', duration: 6 * 60, createdAt: Date.now(), updatedAt: Date.now() },
+  { id: 'preset-5', name: 'Tea Steeping', duration: 3 * 60, createdAt: Date.now(), updatedAt: Date.now() },
+  { id: 'preset-6', name: 'Workout Interval', duration: 90, createdAt: Date.now(), updatedAt: Date.now() },
 ];
 
+// Helper aman untuk baca/tulis LocalStorage
 function safeGetItem<T>(key: string, fallback: T): T {
   try {
     const item = localStorage.getItem(key);
@@ -183,7 +153,15 @@ function safeSetItem<T>(key: string, value: T): void {
   try {
     localStorage.setItem(key, JSON.stringify(value));
   } catch (e) {
-    console.warn(`[Storage] Failed to set item ${key}:`, e);
+    console.error(`[Storage] Failed to set item ${key}:`, e);
+  }
+}
+
+function safeRemoveItem(key: string): void {
+  try {
+    localStorage.removeItem(key);
+  } catch (e) {
+    console.error(`[Storage] Failed to remove item ${key}:`, e);
   }
 }
 
@@ -278,8 +256,7 @@ export function deleteWorldClock(id: string): boolean {
   const list = getWorldClocks();
   const filtered = list.filter((item) => item.id !== id);
   if (filtered.length !== list.length) {
-    // Reindex positions
-    filtered.forEach((item, idx) => {
+    filtered.forEach((item, idx) => { 
       item.position = idx;
     });
     safeSetItem(STORAGE_KEYS.WORLD_CLOCKS, filtered);
@@ -365,39 +342,72 @@ export function getStoredActiveTimer(): ActiveTimerState | null {
   return safeGetItem<ActiveTimerState | null>(STORAGE_KEYS.ACTIVE_TIMER, null);
 }
 
-// Fungsi untuk menyimpan active timer
-export const saveActiveTimer = (timerState: ActiveTimerState | null): void => {
-  try {
-    if (!timerState) {
-      localStorage.removeItem('oclock_active_timer');
-    } else {
-      localStorage.setItem('oclock_active_timer', JSON.stringify(timerState));
-    }
-  } catch (error) {
-    console.error('Failed to save active timer state:', error);
-  }
-};
+export function getActiveTimer(): ActiveTimerState | null {
+  const timer = getStoredActiveTimer();
+  if (!timer) return null;
 
-// TAMBAHKAN FUNGSI INI DI BAWAHNYA:
-export const getActiveTimer = (): ActiveTimerState | null => {
-  try {
-    const data = localStorage.getItem('oclock_active_timer');
-    return data ? JSON.parse(data) : null;
-  } catch (error) {
-    console.error('Failed to read active timer state:', error);
-    return null;
+  // Jika timer sedang berjalan (running) dan punya targetEndTime
+  if (timer.status === 'running' && timer.targetEndTime) {
+    const now = Date.now();
+    const updatedRemaining = Math.max(0, Math.ceil((timer.targetEndTime - now) / 1000));
+
+    return {
+      ...timer,
+      remaining: updatedRemaining,
+      status: updatedRemaining === 0 ? 'finished' : 'running',
+    };
   }
-};
+
+  return timer;
+}
+
+export function saveActiveTimer(timerState: ActiveTimerState | null): void {
+  if (!timerState) {
+    safeRemoveItem(STORAGE_KEYS.ACTIVE_TIMER);
+  } else {
+    safeSetItem(STORAGE_KEYS.ACTIVE_TIMER, timerState);
+  }
+}
+
+export function clearActiveTimer(): void {
+  safeRemoveItem(STORAGE_KEYS.ACTIVE_TIMER);
+}
 
 // ----------------- Stopwatch Session -----------------
 export function getStoredStopwatch(): StopwatchState | null {
   return safeGetItem<StopwatchState | null>(STORAGE_KEYS.STOPWATCH, null);
 }
 
-export function saveActiveStopwatch(state: StopwatchState | null): void {
-  safeSetItem(STORAGE_KEYS.STOPWATCH, state);
+export function getActiveStopwatch(): StopwatchState | null {
+  const savedState = getStoredStopwatch();
+  if (!savedState) return null;
+
+  // Jika stopwatch ditinggalkan dalam keadaan running, hitung selisih waktu terlewat
+  if (savedState.isRunning && savedState.startedAt) {
+    const now = Date.now();
+    const additionalTime = Math.max(0, now - savedState.startedAt);
+
+    return {
+      ...savedState,
+      elapsedTime: savedState.elapsedTime + additionalTime,
+      startedAt: now, // Atur ulang timestamp awal ke sekarang setelah dihitung
+    };
+  }
+
+  return savedState;
 }
 
+export function saveActiveStopwatch(state: StopwatchState | null): void {
+  if (!state) {
+    safeRemoveItem(STORAGE_KEYS.STOPWATCH);
+  } else {
+    safeSetItem(STORAGE_KEYS.STOPWATCH, state);
+  }
+}
+
+export function clearActiveStopwatch(): void {
+  safeRemoveItem(STORAGE_KEYS.STOPWATCH);
+}
 
 // ----------------- Settings -----------------
 export function getSettings(): AppSettings {
@@ -409,4 +419,20 @@ export function updateSettings(partial: Partial<AppSettings>): AppSettings {
   const updated = { ...current, ...partial };
   safeSetItem(STORAGE_KEYS.SETTINGS, updated);
   return updated;
+}
+
+// ----------------- Utilities & Synchronization -----------------
+export function resetAllStorageData(): void {
+  Object.values(STORAGE_KEYS).forEach((key) => safeRemoveItem(key));
+}
+
+export function subscribeToStorageChanges(callback: (key: string) => void): () => void {
+  const handler = (event: StorageEvent) => {
+    if (event.key && Object.values(STORAGE_KEYS).includes(event.key)) {
+      callback(event.key);
+    }
+  };
+
+  window.addEventListener('storage', handler);
+  return () => window.removeEventListener('storage', handler);
 }
