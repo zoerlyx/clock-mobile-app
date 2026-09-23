@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Sliders, Volume2, Smartphone, Clock, Sparkles, Bell, Check, ShieldAlert, Moon } from 'lucide-react';
+import { X, Volume2, Smartphone, Clock, Sparkles, Bell, Check, ShieldAlert, Moon } from 'lucide-react';
 import { AppSettings } from '../../services/storage';
 import { NotificationManager } from '../../services/notifications';
 import { soundEngine } from '../../services/audio';
@@ -27,9 +27,35 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
   if (!isOpen) return null;
 
-  const handleToggleDarkMode = () => {
+  // MODIFIKASI: Menerima event mouse 'e' untuk menangkap koordinat klik
+  const handleToggleDarkMode = (e: React.MouseEvent<HTMLButtonElement>) => {
     soundEngine.playClick(800);
-    onUpdateSettings({ darkMode: !settings.darkMode });
+    
+    // Set posisi x dan y dari titik switch yang diklik
+    document.documentElement.style.setProperty('--x', `${e.clientX}px`);
+    document.documentElement.style.setProperty('--y', `${e.clientY}px`);
+
+    const nextDarkMode = !settings.darkMode;
+
+    // Jika browser mendukung View Transitions, bungkus update state & class dark
+    if (document.startViewTransition) {
+      document.startViewTransition(() => {
+        if (nextDarkMode) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+        onUpdateSettings({ darkMode: nextDarkMode });
+      });
+    } else {
+      // Fallback untuk browser lama
+      if (nextDarkMode) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+      onUpdateSettings({ darkMode: nextDarkMode });
+    }
   };
 
   const handleToggleSound = () => {
@@ -245,7 +271,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         <button
           type="button"
           onClick={onClose}
-          className="mt-2 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs shadow-md shadow-blue-500/25 transition-all active:scale-98"
+          className="mt-2 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs shadow-md shadow-blue-500/25 transition-all active:scale-98 cursor-pointer"
         >
           Done
         </button>

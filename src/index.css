@@ -18,6 +18,7 @@
 
 ::view-transition-new(root) {
   z-index: 9999;
+  animation: circle-expand 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 ::view-transition-old(root) {
@@ -26,8 +27,28 @@
 
 .dark::view-transition-old(root) {
   z-index: 9999;
+  animation: circle-shrink 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .dark::view-transition-new(root) {
   z-index: 1;
+}
+
+/* Keyframes Lingkaran Membesar & Memengecil */
+@keyframes circle-expand {
+  from {
+    clip-path: circle(0% at var(--x, 50%) var(--y, 50%));
+  }
+  to {
+    clip-path: circle(150% at var(--x, 50%) var(--y, 50%));
+  }
+}
+
+@keyframes circle-shrink {
+  from {
+    clip-path: circle(150% at var(--x, 50%) var(--y, 50%));
+  }
+  to {
+    clip-path: circle(0% at var(--x, 50%) var(--y, 50%));
+  }
 }
