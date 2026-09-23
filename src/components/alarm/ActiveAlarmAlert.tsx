@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bell, Clock, X } from 'lucide-react';
+import { Bell, Sliders, X } from 'lucide-react';
 import { Alarm } from '../../types';
 
 interface ActiveAlarmAlertProps {
@@ -21,58 +21,63 @@ export const ActiveAlarmAlert: React.FC<ActiveAlarmAlertProps> = ({
   return (
     <div
       id="active-alarm-overlay"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 dark:bg-black/80 backdrop-blur-md animate-in fade-in"
+      className="absolute inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/40 dark:bg-black/60 backdrop-blur-md animate-in fade-in duration-200"
     >
-      <div className="w-full max-w-sm rounded-[36px] bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-7 shadow-[0_25px_70px_rgba(0,0,0,0.15)] dark:shadow-[0_25px_70px_rgba(0,0,0,0.8)] flex flex-col items-center text-center relative overflow-hidden">
-        {/* Soft pulsing ambient aura */}
-        <div className="absolute -top-10 -right-10 w-36 h-36 rounded-full bg-blue-200/50 dark:bg-blue-600/20 blur-3xl animate-pulse pointer-events-none" />
-        <div className="absolute -bottom-10 -left-10 w-36 h-36 rounded-full bg-sky-200/40 dark:bg-sky-500/15 blur-3xl animate-pulse pointer-events-none" />
+      <div className="w-full max-w-[340px] rounded-[32px] bg-white dark:bg-slate-950 border border-slate-100 dark:border-slate-800/80 p-6 shadow-2xl flex flex-col items-center text-center relative overflow-hidden space-y-5">
+        
+        {/* Soft Ambient Reflections - Sama seperti di App.tsx */}
+        <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-blue-200/30 dark:bg-blue-600/10 blur-2xl pointer-events-none" />
+        <div className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full bg-sky-200/25 dark:bg-sky-500/10 blur-2xl pointer-events-none" />
 
-        {/* Ringing Bell Icon */}
-        <div className="w-16 h-16 rounded-3xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-800/80 flex items-center justify-center mb-4 shadow-sm animate-bounce">
-          <Bell className="w-8 h-8 fill-current" />
+        {/* Alarm Bell Icon */}
+        <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-100/80 dark:border-blue-800/60 flex items-center justify-center shadow-sm">
+          <Bell className="w-5 h-5 text-blue-600 dark:text-blue-400" />
         </div>
 
-        {/* Alarm Digital Time */}
-        <span className="text-4xl sm:text-5xl font-mono font-light tracking-tight text-slate-900 dark:text-slate-100 mb-1">
-          {hoursStr}:{minutesStr}
-        </span>
+        {/* Time & Label Info */}
+        <div className="space-y-1">
+          <div className="text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+            {hoursStr}:{minutesStr}
+          </div>
+          <p className="text-xs font-medium text-slate-500 dark:text-slate-400 max-w-[200px] truncate mx-auto">
+            {alarm.label || 'Alarm'}
+          </p>
+        </div>
 
-        <h3 className="text-base font-semibold text-slate-800 dark:text-slate-200 mb-6">
-          {alarm.label || 'Alarm'}
-        </h3>
-
-        {/* Action Buttons */}
-        <div className="w-full space-y-2.5 relative z-10">
+        {/* Action Buttons - Konsisten dengan AlarmList & Modal */}
+        <div className="w-full space-y-2 pt-1">
+          {/* Dismiss Button */}
           <button
             id="dismiss-alarm-btn"
             type="button"
             onClick={onDismiss}
-            className="w-full py-4 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm shadow-[0_8px_20px_rgba(37,99,235,0.3)] transition-all active:scale-98 flex items-center justify-center gap-2"
+            className="w-full h-10 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium shadow-sm shadow-blue-500/25 transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"
           >
-            <X className="w-4 h-4 stroke-[2.5]" />
-            Stop Alarm
+            <X className="w-3.5 h-3.5 stroke-[2.5]" />
+            Turn off the alarm
           </button>
 
+          {/* Snooze Options */}
           <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
               onClick={() => onSnooze(5)}
-              className="py-3 rounded-2xl bg-blue-50 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-slate-700 text-blue-700 dark:text-blue-300 border border-blue-100 dark:border-slate-700 font-medium text-xs flex items-center justify-center gap-1.5 transition-all"
+              className="h-9 rounded-full bg-blue-50 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-slate-700 text-blue-600 dark:text-blue-400 border border-blue-100/80 dark:border-slate-700 text-xs font-medium transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-1"
             >
-              <Clock className="w-3.5 h-3.5" />
-              Snooze 5m
+              <Sliders className="w-3 h-3 rotate-90" />
+              Tunda 5m
             </button>
             <button
               type="button"
               onClick={() => onSnooze(10)}
-              className="py-3 rounded-2xl bg-blue-50 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-slate-700 text-blue-700 dark:text-blue-300 border border-blue-100 dark:border-slate-700 font-medium text-xs flex items-center justify-center gap-1.5 transition-all"
+              className="h-9 rounded-full bg-blue-50 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-slate-700 text-blue-600 dark:text-blue-400 border border-blue-100/80 dark:border-slate-700 text-xs font-medium transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-1"
             >
-              <Clock className="w-3.5 h-3.5" />
-              Snooze 10m
+              <Sliders className="w-3 h-3 rotate-90" />
+              Tunda 10m
             </button>
           </div>
         </div>
+
       </div>
     </div>
   );
