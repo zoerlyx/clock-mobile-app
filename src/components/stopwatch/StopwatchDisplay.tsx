@@ -14,24 +14,34 @@ export const StopwatchDisplay: React.FC<StopwatchDisplayProps> = ({
   initialState = null,
   enable3D = true,
 }) => {
-  // 1. Ambil data tersimpan dari LocalStorage jika props initialState tidak ada/null
-  const restoredState = initialState || getActiveStopwatch();
+  // 1. Gunakan Lazy Initializer agar selalu mengambil data paling segar dari LocalStorage/Props saat Mount
+  const [stopwatchState, setStopwatchState] = useState<StopwatchState>(() => {
+    // Prioritaskan initialState HANYA jika valid & memiliki data elapsedTime / isRunning
+    if (initialState && (initialState.elapsedTime > 0 || initialState.isRunning)) {
+      return initialState;
+    }
+    return getActiveStopwatch() || {
+      elapsedTime: 0,
+      isRunning: false,
+      startedAt: null,
+      pausedAt: null,
+      laps: [],
+    };
+  });
 
-  const startedAtRef = useRef<number | null>(restoredState?.startedAt || null);
-  const [isRunning, setIsRunning] = useState<boolean>(restoredState?.isRunning || false);
-  const [elapsedTime, setElapsedTime] = useState<number>(restoredState?.elapsedTime || 0);
-  const [laps, setLaps] = useState<LapRecord[]>(restoredState?.laps || []);
+  const { isRunning, elapsedTime, laps } = stopwatchState;
 
+  const startedAtRef = useRef<number | null>(stopwatchState.startedAt);
   const lastStartTimeRef = useRef<number | null>(null);
-  const accumulatedTimeRef = useRef<number>(restoredState?.elapsedTime || 0);
-  const lastSecondRef = useRef<number>(Math.floor((restoredState?.elapsedTime || 0) / 1000));
+  const accumulatedTimeRef = useRef<number>(elapsedTime);
+  const lastSecondRef = useRef<number>(Math.floor(elapsedTime / 1000));
 
-  // 2. Selalu sinkronkan accumulatedTimeRef saat elapsedTime berubah
+  // 2. Sinkronkan ref setiap elapsedTime terupdate
   useEffect(() => {
     accumulatedTimeRef.current = elapsedTime;
   }, [elapsedTime]);
 
-  // 3. Auto-save ke LocalStorage
+  // 3. Auto-save ke LocalStorage setiap ada perubahan state
   useEffect(() => {
     saveActiveStopwatch({
       elapsedTime,
@@ -59,7 +69,10 @@ export const StopwatchDisplay: React.FC<StopwatchDisplayProps> = ({
         const delta = now - lastStartTimeRef.current;
         const currentTotal = baseTime + delta;
 
-        setElapsedTime(currentTotal);
+        setStopwatchState((prev) => ({
+          ...prev,
+          elapsedTime: currentTotal,
+        }));
 
         const currentSec = Math.floor(currentTotal / 1000);
         if (currentSec !== lastSecondRef.current) {
@@ -81,35 +94,48 @@ export const StopwatchDisplay: React.FC<StopwatchDisplayProps> = ({
   // 5. Handlers
   const handleStart = () => {
     soundEngine.playClick(950);
+    const now = Date.now();
+    startedAtRef.current = now;
     accumulatedTimeRef.current = elapsedTime;
-    startedAtRef.current = Date.now();
-    setIsRunning(true);
+
+    setStopwatchState((prev) => ({
+      ...prev,
+      isRunning: true,
+      startedAt: now,
+      pausedAt: null,
+    }));
   };
 
   const handlePause = () => {
     soundEngine.playClick(650);
-    setIsRunning(false);
     startedAtRef.current = null;
     accumulatedTimeRef.current = elapsedTime;
+
+    setStopwatchState((prev) => ({
+      ...prev,
+      isRunning: false,
+      startedAt: null,
+      pausedAt: Date.now(),
+    }));
   };
 
   const handleReset = () => {
     soundEngine.playClick(450);
-    setIsRunning(false);
-    setElapsedTime(0);
     startedAtRef.current = null;
     accumulatedTimeRef.current = 0;
     lastStartTimeRef.current = null;
     lastSecondRef.current = 0;
-    setLaps([]);
 
-    saveActiveStopwatch({
+    const resetState: StopwatchState = {
       elapsedTime: 0,
       isRunning: false,
       startedAt: null,
       pausedAt: null,
       laps: [],
-    });
+    };
+
+    setStopwatchState(resetState);
+    saveActiveStopwatch(null);
   };
 
   const handleLap = () => {
@@ -127,7 +153,10 @@ export const StopwatchDisplay: React.FC<StopwatchDisplayProps> = ({
       timestamp: Date.now(),
     };
 
-    setLaps((prev) => [...prev, newLap]);
+    setStopwatchState((prev) => ({
+      ...prev,
+      laps: [...prev.laps, newLap],
+    }));
   };
 
   // Kalkulasi Tampilan Digital
@@ -161,7 +190,7 @@ export const StopwatchDisplay: React.FC<StopwatchDisplayProps> = ({
         {/* Analog Precision Dial */}
         <div className="relative w-44 h-44 sm:w-52 sm:h-52 flex items-center justify-center select-none my-1">
           <svg viewBox="0 0 200 200" className="w-full h-full filter drop-shadow-[0_8px_20px_rgba(0,0,0,0.04)] dark:drop-shadow-[0_8px_20px_rgba(0,0,0,0.4)]">
-            <circle
+            <circle 
               cx="100"
               cy="100"
               r="94"
@@ -198,7 +227,7 @@ export const StopwatchDisplay: React.FC<StopwatchDisplayProps> = ({
               );
             })}
 
-            <text x="100" y="40" textAnchor="middle" className="fill-slate-500 dark:fill-slate-400" fontSize="10" fontWeight="600" fontFamily="sans-serif">60</text>
+            <text x="100" y="40" textAnchor="middle" className="fill-slate-500 dark:fill-slate-400" fontSize="10" fontWeight="600" fontFamily="sans-serif">60</text> 
             <text x="162" y="103" textAnchor="middle" className="fill-slate-500 dark:fill-slate-400" fontSize="10" fontWeight="600" fontFamily="sans-serif">15</text>
             <text x="100" y="166" textAnchor="middle" className="fill-slate-500 dark:fill-slate-400" fontSize="10" fontWeight="600" fontFamily="sans-serif">30</text>
             <text x="38" y="103" textAnchor="middle" className="fill-slate-500 dark:fill-slate-400" fontSize="10" fontWeight="600" fontFamily="sans-serif">45</text>
