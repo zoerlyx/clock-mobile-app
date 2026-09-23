@@ -208,56 +208,93 @@ export default function App() {
     }
   };
 
-  useEffect(() => {
-    if (settings.darkMode) {
+  // 1. Dihapus/Disesuaikan: useEffect ini tidak perlu mengurus class 'dark' lagi 
+// karena penambahan class 'dark' akan ditangani langsung oleh View Transition.
+useEffect(() => {
+  // Hanya gunakan ini jika aplikasi pertama kali dimuat (initial render)
+  if (settings.darkMode) {
+    document.documentElement.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+  }
+}, []); // Jalankan sekali saja di awal (mount)
+
+// 2. Buat fungsi Toggle Dark Mode khusus yang mendukung View Transition & koordinat klik
+const handleToggleDarkMode = (e?: React.MouseEvent<HTMLButtonElement>) => {
+  // Tangkap koordinat klik tombol, jika tidak ada fallback ke tengah layar
+  if (e) {
+    document.documentElement.style.setProperty('--x', `${e.clientX}px`);
+    document.documentElement.style.setProperty('--y', `${e.clientY}px`);
+  } else {
+    document.documentElement.style.setProperty('--x', '50%');
+    document.documentElement.style.setProperty('--y', '50%');
+  }
+
+  const nextDarkMode = !settings.darkMode;
+
+  // Jalankan View Transition jika didukung browser
+  if (document.startViewTransition) {
+    document.startViewTransition(() => {
+      if (nextDarkMode) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+      handleUpdateSettings({ darkMode: nextDarkMode });
+    });
+  } else {
+    // Fallback jika browser belum mendukung View Transition
+    if (nextDarkMode) {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
-  }, [settings.darkMode]);
+    handleUpdateSettings({ darkMode: nextDarkMode });
+  }
+};
 
-  const activeAlarmCount = alarms.filter((a) => a.enabled).length;
+const activeAlarmCount = alarms.filter((a) => a.enabled).length;
 
-  return (
-    <div className={`${settings.darkMode ? 'dark' : ''} min-h-screen w-full bg-gradient-to-br from-[#eef2f7] via-[#f5f8fc] to-[#e6ecf4] dark:from-[#080d1a] dark:via-[#0c1322] dark:to-[#090f1d] text-slate-800 dark:text-slate-100 flex flex-col items-center justify-center p-0 sm:p-6 relative overflow-x-hidden transition-colors duration-300`}>
-      {/* Background Reflections */}
-      <div className="fixed top-12 left-1/4 w-96 h-96 rounded-full bg-blue-200/30 dark:bg-blue-600/10 blur-3xl pointer-events-none" />
-      <div className="fixed bottom-12 right-1/4 w-96 h-96 rounded-full bg-sky-200/25 dark:bg-sky-500/10 blur-3xl pointer-events-none" />
+return (
+  <div className={`${settings.darkMode ? 'dark' : ''} min-h-screen w-full bg-gradient-to-br from-[#eef2f7] via-[#f5f8fc] to-[#e6ecf4] dark:from-[#080d1a] dark:via-[#0c1322] dark:to-[#090f1d] text-slate-800 dark:text-slate-100 flex flex-col items-center justify-center p-0 sm:p-6 relative overflow-x-hidden transition-colors duration-300`}>
+    {/* Background Reflections */}
+    <div className="fixed top-12 left-1/4 w-96 h-96 rounded-full bg-blue-200/30 dark:bg-blue-600/10 blur-3xl pointer-events-none" />
+    <div className="fixed bottom-12 right-1/4 w-96 h-96 rounded-full bg-sky-200/25 dark:bg-sky-500/10 blur-3xl pointer-events-none" />
 
-      {/* Main Container */}
-      <main
-        id="clock-mobile-app"
-        className="w-full sm:max-w-[430px] h-screen sm:h-[860px] flex flex-col bg-white dark:bg-slate-950 sm:rounded-[46px] border-0 sm:border-[10px] sm:border-white sm:dark:border-slate-900 ring-0 sm:ring-1 sm:ring-slate-900/5 sm:dark:ring-slate-800 shadow-none sm:shadow-[0_25px_70px_-15px_rgba(15,23,42,0.12),0_10px_30px_-5px_rgba(15,23,42,0.06)] dark:sm:shadow-[0_25px_70px_-15px_rgba(0,0,0,0.8)] overflow-hidden relative z-10 transition-colors duration-300"
-      >
-        {showSplash && <SplashScreen isFadingOut={isFadingOut} />}
-        
-        {/* Tab View */}
-        <div className="flex-1 overflow-hidden relative bg-white dark:bg-slate-950">
-          {currentTab === 'alarm' && (
-            <AlarmList
-              alarms={alarms}
-              militaryTime={settings.militaryTime}
-              darkMode={settings.darkMode}
-              onToggleDarkMode={() => handleUpdateSettings({ darkMode: !settings.darkMode })}
-              onSaveAlarm={handleSaveAlarm}
-              onToggleAlarm={handleToggleAlarm}
-              onDeleteAlarm={handleDeleteAlarm}
-              onOpenSettings={() => setIsSettingsOpen(true)}
-            />
-          )}
+    {/* Main Container */}
+    <main
+      id="clock-mobile-app"
+      className="w-full sm:max-w-[430px] h-screen sm:h-[860px] flex flex-col bg-white dark:bg-slate-950 sm:rounded-[46px] border-0 sm:border-[10px] sm:border-white sm:dark:border-slate-900 ring-0 sm:ring-1 sm:ring-slate-900/5 sm:dark:ring-slate-800 shadow-none sm:shadow-[0_25px_70px_-15px_rgba(15,23,42,0.12),0_10px_30px_-5px_rgba(15,23,42,0.06)] dark:sm:shadow-[0_25px_70px_-15px_rgba(0,0,0,0.8)] overflow-hidden relative z-10 transition-colors duration-300"
+    >
+      {showSplash && <SplashScreen isFadingOut={isFadingOut} />}
+      
+      {/* Tab View */}
+      <div className="flex-1 overflow-hidden relative bg-white dark:bg-slate-950">
+        {currentTab === 'alarm' && (
+          <AlarmList
+            alarms={alarms}
+            militaryTime={settings.militaryTime}
+            darkMode={settings.darkMode}
+            onToggleDarkMode={handleToggleDarkMode} // <-- 3. Pass fungsi khusus yang baru di sini
+            onSaveAlarm={handleSaveAlarm}
+            onToggleAlarm={handleToggleAlarm}
+            onDeleteAlarm={handleDeleteAlarm}
+            onOpenSettings={() => setIsSettingsOpen(true)}
+          />
+        )}
 
-          {currentTab === 'world-clock' && (
-            <WorldClockList
-              locations={worldClocks}
-              currentDate={currentDate}
-              militaryTime={settings.militaryTime}
-              enable3D={settings.enable3DEffects}
-              onAddCity={handleAddCity}
-              onDeleteLocation={handleDeleteWorldClock}
-              onMoveUp={handleMoveUpWorldClock}
-              onMoveDown={handleMoveDownWorldClock}
-            />
-          )}
+        {currentTab === 'world-clock' && (
+          <WorldClockList
+            locations={worldClocks}
+            currentDate={currentDate}
+            militaryTime={settings.militaryTime}
+            enable3D={settings.enable3DEffects}
+            onAddCity={handleAddCity}
+            onDeleteLocation={handleDeleteWorldClock}
+            onMoveUp={handleMoveUpWorldClock}
+            onMoveDown={handleMoveDownWorldClock}
+          />
+        )}
 
           {currentTab === 'timer' && (
             <TimerDisplay
