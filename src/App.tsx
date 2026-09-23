@@ -52,6 +52,22 @@ export default function App() {
   const lastTriggeredTimeRef = useRef<string>('');
 
   useEffect(() => {
+  // 1. Tampil selama 1.8 detik
+  const timer = setTimeout(() => {
+    setIsFadingOut(true); // Mulai animasi fade-out (0.5s)
+
+    // 2. Hapus total dari DOM setelah animasi selesai
+    const removeTimer = setTimeout(() => {
+      setShowSplash(false);
+    }, 500);
+
+    return () => clearTimeout(removeTimer);
+  }, 1800);
+
+  return () => clearTimeout(timer);
+}, []);
+
+  useEffect(() => {
     const timerId = window.setInterval(() => {
       const now = new Date();
       setCurrentDate(now);
@@ -205,6 +221,9 @@ export default function App() {
         id="clock-mobile-app"
         className="w-full sm:max-w-[430px] h-screen sm:h-[860px] flex flex-col bg-white dark:bg-slate-950 sm:rounded-[46px] border-0 sm:border-[10px] sm:border-white sm:dark:border-slate-900 ring-0 sm:ring-1 sm:ring-slate-900/5 sm:dark:ring-slate-800 shadow-none sm:shadow-[0_25px_70px_-15px_rgba(15,23,42,0.12),0_10px_30px_-5px_rgba(15,23,42,0.06)] dark:sm:shadow-[0_25px_70px_-15px_rgba(0,0,0,0.8)] overflow-hidden relative z-10 transition-colors duration-300"
       >
+
+        {showSplash && <SplashScreen isFadingOut={isFadingOut} />}
+        
         {/* Tab View */}
         <div className="flex-1 overflow-hidden relative bg-white dark:bg-slate-950">
           {currentTab === 'alarm' && (
