@@ -65,7 +65,7 @@ export const ActiveAlarmAlert: React.FC<ActiveAlarmAlertProps> = ({
               className="h-9 rounded-full bg-blue-50 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-slate-700 text-blue-600 dark:text-blue-400 border border-blue-100/80 dark:border-slate-700 text-xs font-medium transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-1"
             >
               <Sliders className="w-3 h-3 rotate-90" />
-              Tunda 5m
+              Snooze 5m
             </button>
             <button
               type="button"
@@ -73,7 +73,7 @@ export const ActiveAlarmAlert: React.FC<ActiveAlarmAlertProps> = ({
               className="h-9 rounded-full bg-blue-50 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-slate-700 text-blue-600 dark:text-blue-400 border border-blue-100/80 dark:border-slate-700 text-xs font-medium transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-1"
             >
               <Sliders className="w-3 h-3 rotate-90" />
-              Tunda 10m
+              Snooze 10m
             </button>
           </div>
         </div>
