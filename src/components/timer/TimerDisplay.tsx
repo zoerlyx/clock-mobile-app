@@ -14,6 +14,8 @@ interface TimerDisplayProps {
   enable3D: boolean;
   onSavePreset: (presetData: { id?: string; name: string; duration: number }) => void;
   onDeletePreset: (id: string) => void;
+  // 1. TAMBAHKAN DUA PROP INI AGAR INTERFACE BERSIH DAN SESUAI DENGAN App.tsx
+  onStateChange?: (state: ActiveTimerState | null) => void;
 }
 
 const STORAGE_KEY_SAVED_PICKER = 'oclock_timer_picker_values';
@@ -24,6 +26,7 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
   enable3D,
   onSavePreset,
   onDeletePreset,
+  onStateChange, // 2. RECEIVE PROP DI SINI
 }) => {
   // Read last configured picker duration
   const getSavedPicker = () => {
@@ -96,17 +99,20 @@ export const TimerDisplay: React.FC<TimerDisplayProps> = ({
     newDuration: number,
     newTargetEndTime: number | null
   ) => {
-    if (newStatus === 'idle') {
-      saveActiveTimer(null);
-    } else {
-      saveActiveTimer({
-        duration: newDuration,
-        remaining: newRemaining,
-        status: newStatus,
-        startedAt: newStatus === 'running' ? Date.now() : null,
-        targetEndTime: newTargetEndTime,
-        label,
-      });
+    const timerState = newStatus === 'idle' ? null : {
+      duration: newDuration,
+      remaining: newRemaining,
+      status: newStatus,
+      startedAt: newStatus === 'running' ? Date.now() : null,
+      targetEndTime: newTargetEndTime,
+      label,
+    };
+
+    saveActiveTimer(timerState);
+
+    // 3. SEBARKAN STATUS BARU KE App.tsx AGAR BottomNav MENGETAHUI TIMER RUNNING
+    if (onStateChange) {
+      onStateChange(timerState);
     }
   };
 
