@@ -365,9 +365,29 @@ export function getStoredActiveTimer(): ActiveTimerState | null {
   return safeGetItem<ActiveTimerState | null>(STORAGE_KEYS.ACTIVE_TIMER, null);
 }
 
-export function saveActiveTimer(state: ActiveTimerState | null): void {
-  safeSetItem(STORAGE_KEYS.ACTIVE_TIMER, state);
-}
+// Fungsi untuk menyimpan active timer
+export const saveActiveTimer = (timerState: ActiveTimerState | null): void => {
+  try {
+    if (!timerState) {
+      localStorage.removeItem('oclock_active_timer');
+    } else {
+      localStorage.setItem('oclock_active_timer', JSON.stringify(timerState));
+    }
+  } catch (error) {
+    console.error('Failed to save active timer state:', error);
+  }
+};
+
+// TAMBAHKAN FUNGSI INI DI BAWAHNYA:
+export const getActiveTimer = (): ActiveTimerState | null => {
+  try {
+    const data = localStorage.getItem('oclock_active_timer');
+    return data ? JSON.parse(data) : null;
+  } catch (error) {
+    console.error('Failed to read active timer state:', error);
+    return null;
+  }
+};
 
 // ----------------- Stopwatch Session -----------------
 export function getStoredStopwatch(): StopwatchState | null {
