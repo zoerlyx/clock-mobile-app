@@ -289,7 +289,7 @@ export const StopwatchDisplay: React.FC<StopwatchDisplayProps> = ({
         </div>
 
         {/* Digital Readout */}
-        <div className="flex items-baseline justify-center gap-1 my-3">
+        <div className="flex items-baseline justify-center gap-1 my-6">
           <span className="text-4xl sm:text-5xl font-light font-mono text-slate-900 dark:text-slate-100 tracking-tight">
             {mStr}:{sStr}
           </span>
@@ -299,7 +299,7 @@ export const StopwatchDisplay: React.FC<StopwatchDisplayProps> = ({
         </div>
 
         {/* Control Buttons */}
-        <div className="flex items-center justify-center gap-3 w-full max-w-xs mt-1">
+        <div className="flex items-center justify-center gap-3 w-full max-w-xs mt-2">
           {isRunning ? (
             <button
               id="stopwatch-lap-btn"
