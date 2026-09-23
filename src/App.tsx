@@ -22,6 +22,7 @@ import { CityData } from './services/timezones';
 import { soundEngine } from './services/audio';
 import { NotificationManager } from './services/notifications';
 
+import { SplashScreen } from './components/common/SplashScreen';
 import { BottomNav } from './components/layout/BottomNav';
 import { SettingsModal } from './components/layout/SettingsModal';
 import { AlarmList } from './components/alarm/AlarmList';
@@ -33,6 +34,8 @@ import { StopwatchDisplay } from './components/stopwatch/StopwatchDisplay';
 export default function App() {
   const [currentTab, setCurrentTab] = useState<AppTab>('alarm');
 
+  const [showSplash, setShowSplash] = useState(true);
+  const [isFadingOut, setIsFadingOut] = useState(false);
   const [alarms, setAlarms] = useState<Alarm[]>(() => getAlarms());
   const [worldClocks, setWorldClocks] = useState<WorldClockLocation[]>(() => getWorldClocks());
   const [timerPresets, setTimerPresets] = useState<TimerPreset[]>(() => getTimerPresets());
