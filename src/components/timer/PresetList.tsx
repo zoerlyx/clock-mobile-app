@@ -43,7 +43,7 @@ return (
             soundEngine.playClick(800);
             onAddPreset();
           }}
-          className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-100/80 transition-colors"
+          className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full  bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium shadow-sm shadow-blue-500/25 transition-all active:scale-95"
         >
           <Plus className="w-3.5 h-3.5" />
           New
