@@ -45,6 +45,9 @@ export const AlarmModal: React.FC<AlarmModalProps> = ({
   const [repeatDays, setRepeatDays] = useState<DayOfWeek[]>([]);
   const [sound, setSound] = useState<Alarm['sound']>('radiance');
   const [vibration, setVibration] = useState(true);
+  
+  // State tersendiri untuk mengontrol buka/tutup custom dropdown sound
+  const [isToneDropdownOpen, setIsToneDropdownOpen] = useState(false);
 
   useEffect(() => {
     if (alarmToEdit) {
@@ -77,6 +80,8 @@ export const AlarmModal: React.FC<AlarmModalProps> = ({
       setSound('radiance');
       setVibration(true);
     }
+    // Reset dropdown saat modal dibuka/ditutup
+    setIsToneDropdownOpen(false);
   }, [alarmToEdit, isOpen, militaryTime]);
 
   if (!isOpen) return null;
@@ -108,6 +113,8 @@ export const AlarmModal: React.FC<AlarmModalProps> = ({
     });
     onClose();
   };
+
+  const currentSoundLabel = SOUND_OPTIONS.find((opt) => opt.id === sound)?.label || 'Radiance';
 
   return (
     <div
@@ -150,6 +157,7 @@ export const AlarmModal: React.FC<AlarmModalProps> = ({
           </div>
         </div>
 
+        {/* Scrollable Form Content */}
         <div className="py-4 space-y-4 overflow-y-auto">
           {/* Time Picker Columns */}
           <div className="py-2 flex items-center justify-center gap-3">
@@ -258,7 +266,7 @@ export const AlarmModal: React.FC<AlarmModalProps> = ({
               value={label}
               onChange={(e) => setLabel(e.target.value)}
               placeholder="e.g. Work, Morning Run"
-              className="w-full px-4 py-2.5 mt-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+              className="w-full px-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm focus:outline-none focus:border-blue-500 transition-colors"
             />
           </div>
 
@@ -275,7 +283,7 @@ export const AlarmModal: React.FC<AlarmModalProps> = ({
                     key={day}
                     type="button"
                     onClick={() => handleToggleDay(day)}
-                    className={`py-2 mt-4 rounded-xl text-xs font-semibold transition-all ${
+                    className={`py-2 rounded-xl text-xs font-semibold transition-all ${
                       isActive
                         ? 'bg-blue-600 text-white shadow-xs'
                         : 'bg-blue-50/70 dark:bg-slate-800 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-slate-700'
@@ -288,44 +296,55 @@ export const AlarmModal: React.FC<AlarmModalProps> = ({
             </div>
           </div>
 
-          {/* Sound Profile Select */}
+          {/* Sound Profile Custom Select */}
           <div className="space-y-1.5">
             <label className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
               Tone
             </label>
             <div className="relative">
-              <div className="relative">
-                <select
-                  value={sound}
-                  onChange={(e) => {
-                    const selectedId = e.target.value as Alarm['sound'];
-                    setSound(selectedId);
-                    soundEngine.playAlarmSoundOnce(selectedId);
-                  }}
-                  className="w-full appearance-none px-3.5 py-2.5 mt-4 rounded-xl text-xs font-semibold bg-slate-100/80 dark:bg-slate-800/80 text-slate-800 dark:text-slate-200 border border-slate-200/80 dark:border-slate-700/70 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all cursor-pointer pr-10"
-                >
-                {SOUND_OPTIONS.map((opt) => (
-                  <option
-                    key={opt.id}
-                    value={opt.id}
-                    className="bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 py-1"
-                  >
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-              
-              {/* Custom Dropdown Chevron Icon */}
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 dark:text-slate-500">
-                <ChevronDown className="w-4 h-4" />
-              </div>
+              {/* Custom Trigger Button */}
+              <button
+                type="button"
+                onClick={() => setIsToneDropdownOpen((prev) => !prev)}
+                className="w-full px-3.5 py-2.5 rounded-xl text-xs font-semibold bg-slate-100/80 dark:bg-slate-800/80 text-slate-800 dark:text-slate-200 border border-slate-200/80 dark:border-slate-700/70 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 flex items-center justify-between transition-all cursor-pointer"
+              >
+                <span>{currentSoundLabel}</span>
+                <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${isToneDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {/* Custom Dropdown Menu */}
+              {isToneDropdownOpen && (
+                <div className="absolute z-50 left-0 right-0 mt-1.5 py-1 rounded-2xl bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl border border-slate-200/80 dark:border-slate-700/80 shadow-xl shadow-slate-900/10 dark:shadow-slate-950/40 animate-in fade-in zoom-in-95 duration-150">
+                  {SOUND_OPTIONS.map((opt) => {
+                    const isSelected = sound === opt.id;
+                    return (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        onClick={() => {
+                          setSound(opt.id);
+                          soundEngine.playAlarmSoundOnce(opt.id);
+                          setIsToneDropdownOpen(false);
+                        }}
+                        className={`w-full px-3.5 py-2 text-xs font-medium flex items-center justify-between transition-colors ${
+                          isSelected
+                            ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 font-semibold'
+                            : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50'
+                        }`}
+                      >
+                        <span>{opt.label}</span>
+                        {isSelected && <Check className="w-3.5 h-3.5 text-blue-500" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
         </div>
-      </div>
 
         {/* Modal Bottom Actions */}
-        <div className="grid grid-cols-2 gap-3 pt-4 border-t border-slate-100 dark:border-slate-800 mt-4 mb-4 ">
+        <div className="grid grid-cols-2 gap-3 pt-4 border-t border-slate-100 dark:border-slate-800 mt-auto">
           <button
             type="button"
             onClick={onClose}
