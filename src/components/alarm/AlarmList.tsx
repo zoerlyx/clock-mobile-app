@@ -9,7 +9,8 @@ interface AlarmListProps {
   alarms: Alarm[];
   militaryTime: boolean;
   darkMode?: boolean;
-  onToggleDarkMode?: () => void;
+  // PERBAIKAN: Tambahkan tipe parameter event mouse pada handler
+  onToggleDarkMode?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   onSaveAlarm: (alarmData: Omit<Alarm, 'id' | 'createdAt' | 'updatedAt'> & { id?: string }) => void;
   onToggleAlarm: (id: string) => void;
   onDeleteAlarm: (id: string) => void;
@@ -62,12 +63,12 @@ export const AlarmList: React.FC<AlarmListProps> = ({
           {onToggleDarkMode && (
             <button
               type="button"
-              onClick={onToggleDarkMode}
-              className="w-9 h-9 rounded-full bg-blue-50 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-slate-700 text-blue-600 dark:text-blue-400 border border-blue-100/80 dark:border-slate-700 flex items-center justify-center transition-all active:scale-95"
+              onClick={onToggleDarkMode} // Langsung passing handler karena tipe di interface sudah sesuai
+              className="w-9 h-9 rounded-full bg-blue-50 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-slate-700 text-blue-600 dark:text-blue-400 border border-blue-100/80 dark:border-slate-700 flex items-center justify-center transition-all active:scale-95 cursor-pointer"
               title={darkMode ? "Mode Terang" : "Mode Gelap"}
               aria-label={darkMode ? "Beralih ke mode terang" : "Beralih ke mode gelap"}
             >
-              {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              {darkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4" />}
             </button>
           )}
 
@@ -75,7 +76,7 @@ export const AlarmList: React.FC<AlarmListProps> = ({
             <button
               type="button"
               onClick={onOpenSettings}
-              className="w-9 h-9 rounded-full bg-blue-50 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-slate-700 text-blue-600 dark:text-blue-400 border border-blue-100/80 dark:border-slate-700 flex items-center justify-center transition-all active:scale-95"
+              className="w-9 h-9 rounded-full bg-blue-50 dark:bg-slate-800 hover:bg-blue-100 dark:hover:bg-slate-700 text-blue-600 dark:text-blue-400 border border-blue-100/80 dark:border-slate-700 flex items-center justify-center transition-all active:scale-95 cursor-pointer"
               title="Pengaturan"
             >
               <Sliders className="w-4 h-4" />
@@ -87,7 +88,7 @@ export const AlarmList: React.FC<AlarmListProps> = ({
             id="add-alarm-btn"
             type="button"
             onClick={handleOpenAdd}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium shadow-sm shadow-blue-500/25 transition-all active:scale-95"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium shadow-sm shadow-blue-500/25 transition-all active:scale-95 cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
             Add
@@ -106,7 +107,7 @@ export const AlarmList: React.FC<AlarmListProps> = ({
           <button
             type="button"
             onClick={handleOpenAdd}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium shadow-sm shadow-blue-500/25 transition-all active:scale-95"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium shadow-sm shadow-blue-500/25 transition-all active:scale-95 cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
             Set Alarm
