@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { AppTab, Alarm, WorldClockLocation, TimerPreset, ActiveTimerState, StopwatchState } from './types';
 import {
   getAlarms,
@@ -36,13 +36,16 @@ export default function App() {
 
   const [showSplash, setShowSplash] = useState(true);
   const [isFadingOut, setIsFadingOut] = useState(false);
+
   const [alarms, setAlarms] = useState<Alarm[]>(() => getAlarms());
   const [worldClocks, setWorldClocks] = useState<WorldClockLocation[]>(() => getWorldClocks());
   const [timerPresets, setTimerPresets] = useState<TimerPreset[]>(() => getTimerPresets());
-  const [activeTimerState] = useState<ActiveTimerState | null>(() => getStoredActiveTimer());
-  const [stopwatchState] = useState<StopwatchState | null>(() => getStoredStopwatch());
+  
+  // Tambahkan setter agar indikator di BottomNav sinkron
+  const [activeTimerState, setActiveTimerState] = useState<ActiveTimerState | null>(() => getStoredActiveTimer());
+  const [stopwatchState, setStopwatchState] = useState<StopwatchState | null>(() => getStoredStopwatch());
+  
   const [settings, setSettings] = useState<AppSettings>(() => getSettings());
-
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const [ringingAlarm, setRingingAlarm] = useState<Alarm | null>(null);
@@ -51,22 +54,39 @@ export default function App() {
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const lastTriggeredTimeRef = useRef<string>('');
 
+  // 1. Cleanup Splash Screen yang Aman
   useEffect(() => {
-  // 1. Tampil selama 1.8 detik
-  const timer = setTimeout(() => {
-    setIsFadingOut(true); // Mulai animasi fade-out (0.5s)
+    let removeTimerId: NodeJS.Timeout;
 
-    // 2. Hapus total dari DOM setelah animasi selesai
-    const removeTimer = setTimeout(() => {
-      setShowSplash(false);
-    }, 500);
+    const splashTimerId = setTimeout(() => {
+      setIsFadingOut(true);
+      removeTimerId = setTimeout(() => {
+        setShowSplash(false);
+      }, 500);
+    }, 1800);
 
-    return () => clearTimeout(removeTimer);
-  }, 1800);
+    return () => {
+      clearTimeout(splashTimerId);
+      if (removeTimerId) clearTimeout(removeTimerId);
+    };
+  }, []);
 
-  return () => clearTimeout(timer);
-}, []);
+  // Handler Trigger Alarm
+  const triggerAlarmAlert = useCallback((alarm: Alarm) => {
+    setRingingAlarm(alarm);
+    soundEngine.startAlarmSound(alarm.sound, alarm.vibration && settings.vibrationEnabled);
 
+    NotificationManager.sendNotification(`ALARM: ${alarm.label || 'Alarm'}`, {
+      body: `${alarm.hour.toString().padStart(2, '0')}:${alarm.minute.toString().padStart(2, '0')}`,
+    });
+  }, [settings.vibrationEnabled]);
+
+  const handleToggleAlarm = useCallback((id: string) => {
+    toggleAlarm(id);
+    setAlarms(getAlarms());
+  }, []);
+
+  // 2. Loop Detik Utama & Pengecekan Alarm
   useEffect(() => {
     const timerId = window.setInterval(() => {
       const now = new Date();
@@ -78,6 +98,7 @@ export default function App() {
       const currentDayOfWeek = now.getDay();
       const timeKey = `${now.toDateString()}_${currentHour}:${currentMinute}`;
 
+      // Cek Snooze
       if (snoozeTargetRef.current && now.getTime() >= snoozeTargetRef.current.epoch) {
         const al = snoozeTargetRef.current.alarm;
         snoozeTargetRef.current = null;
@@ -85,13 +106,14 @@ export default function App() {
         return;
       }
 
-      if (currentSecond < 2 && lastTriggeredTimeRef.current !== timeKey) {
-        lastTriggeredTimeRef.current = timeKey;
-
+      // Cek Alarm Aktif (Toleransi 5 detik pertama menit untuk mengantisipasi keterlambatan thread)
+      if (currentSecond < 5 && lastTriggeredTimeRef.current !== timeKey) {
         for (const alarm of alarms) {
           if (!alarm.enabled) continue;
 
           if (alarm.hour === currentHour && alarm.minute === currentMinute) {
+            lastTriggeredTimeRef.current = timeKey;
+
             if (alarm.repeatDays && alarm.repeatDays.length > 0) {
               if (alarm.repeatDays.includes(currentDayOfWeek as any)) {
                 triggerAlarmAlert(alarm);
@@ -99,7 +121,7 @@ export default function App() {
               }
             } else {
               triggerAlarmAlert(alarm);
-              handleToggleAlarm(alarm.id);
+              handleToggleAlarm(alarm.id); // Matikan alarm sekali pakai
               break;
             }
           }
@@ -108,9 +130,9 @@ export default function App() {
     }, 1000);
 
     const handleWake = () => {
-      const now = new Date();
-      setCurrentDate(now);
+      setCurrentDate(new Date());
     };
+
     window.addEventListener('focus', handleWake);
     document.addEventListener('visibilitychange', handleWake);
 
@@ -119,16 +141,7 @@ export default function App() {
       window.removeEventListener('focus', handleWake);
       document.removeEventListener('visibilitychange', handleWake);
     };
-  }, [alarms]);
-
-  const triggerAlarmAlert = (alarm: Alarm) => {
-    setRingingAlarm(alarm);
-    soundEngine.startAlarmSound(alarm.sound, alarm.vibration && settings.vibrationEnabled);
-
-    NotificationManager.sendNotification(`ALARM: ${alarm.label || 'Alarm'}`, {
-      body: `${alarm.hour.toString().padStart(2, '0')}:${alarm.minute.toString().padStart(2, '0')}`,
-    });
-  };
+  }, [alarms, triggerAlarmAlert, handleToggleAlarm]);
 
   const handleDismissAlarm = () => {
     soundEngine.stopAlarmSound();
@@ -150,11 +163,6 @@ export default function App() {
     saveAlarm(data);
     setAlarms(getAlarms());
     NotificationManager.requestPermission();
-  };
-
-  const handleToggleAlarm = (id: string) => {
-    toggleAlarm(id);
-    setAlarms(getAlarms());
   };
 
   const handleDeleteAlarm = (id: string) => {
@@ -212,16 +220,15 @@ export default function App() {
 
   return (
     <div className={`${settings.darkMode ? 'dark' : ''} min-h-screen w-full bg-gradient-to-br from-[#eef2f7] via-[#f5f8fc] to-[#e6ecf4] dark:from-[#080d1a] dark:via-[#0c1322] dark:to-[#090f1d] text-slate-800 dark:text-slate-100 flex flex-col items-center justify-center p-0 sm:p-6 relative overflow-x-hidden transition-colors duration-300`}>
-      {/* Cohesive Clean Ambient Blue Reflections */}
+      {/* Background Reflections */}
       <div className="fixed top-12 left-1/4 w-96 h-96 rounded-full bg-blue-200/30 dark:bg-blue-600/10 blur-3xl pointer-events-none" />
       <div className="fixed bottom-12 right-1/4 w-96 h-96 rounded-full bg-sky-200/25 dark:bg-sky-500/10 blur-3xl pointer-events-none" />
 
-      {/* Main Framed Container with Distinctive Bezel ("Bingkai") */}
+      {/* Main Container */}
       <main
         id="clock-mobile-app"
         className="w-full sm:max-w-[430px] h-screen sm:h-[860px] flex flex-col bg-white dark:bg-slate-950 sm:rounded-[46px] border-0 sm:border-[10px] sm:border-white sm:dark:border-slate-900 ring-0 sm:ring-1 sm:ring-slate-900/5 sm:dark:ring-slate-800 shadow-none sm:shadow-[0_25px_70px_-15px_rgba(15,23,42,0.12),0_10px_30px_-5px_rgba(15,23,42,0.06)] dark:sm:shadow-[0_25px_70px_-15px_rgba(0,0,0,0.8)] overflow-hidden relative z-10 transition-colors duration-300"
       >
-
         {showSplash && <SplashScreen isFadingOut={isFadingOut} />}
         
         {/* Tab View */}
@@ -259,6 +266,7 @@ export default function App() {
               enable3D={settings.enable3DEffects}
               onSavePreset={handleSaveTimerPreset}
               onDeletePreset={handleDeleteTimerPreset}
+              onStateChange={setActiveTimerState}
             />
           )}
 
@@ -266,6 +274,7 @@ export default function App() {
             <StopwatchDisplay
               initialState={stopwatchState}
               enable3D={settings.enable3DEffects}
+              onStateChange={setStopwatchState}
             />
           )}
         </div>
