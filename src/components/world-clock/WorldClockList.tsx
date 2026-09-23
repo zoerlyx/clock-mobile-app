@@ -129,6 +129,13 @@ export const WorldClockList: React.FC<WorldClockListProps> = ({
         ))}
       </div>
 
+      {/* Helper Hint Text */}
+        {locations.length > 0 && (
+          <p className="text-center text-xs text-slate-400 dark:text-slate-500 font-medium italic tracking-wide pt-2 select-none">
+            Double tap a location to delete
+          </p>
+        )}
+
       {/* Add City Modal */}
       <AddCityModal
         isOpen={isAddModalOpen}
