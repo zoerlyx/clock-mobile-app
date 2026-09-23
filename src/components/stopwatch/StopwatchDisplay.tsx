@@ -8,11 +8,14 @@ import { saveActiveStopwatch, getActiveStopwatch } from '../../services/storage'
 interface StopwatchDisplayProps {
   initialState?: StopwatchState | null;
   enable3D?: boolean;
+  // 1. TAMBAHKAN PROP INI AGAR SESUAI DENGAN INTERFACE App.tsx
+  onStateChange?: (state: StopwatchState | null) => void;
 }
 
 export const StopwatchDisplay: React.FC<StopwatchDisplayProps> = ({
   initialState = null,
   enable3D = true,
+  onStateChange, // 2. RECEIVE PROP DI SINI
 }) => {
   // 1. Gunakan Lazy Initializer agar selalu mengambil data paling segar dari LocalStorage/Props saat Mount
   const [stopwatchState, setStopwatchState] = useState<StopwatchState>(() => {
@@ -41,15 +44,27 @@ export const StopwatchDisplay: React.FC<StopwatchDisplayProps> = ({
     accumulatedTimeRef.current = elapsedTime;
   }, [elapsedTime]);
 
-  // 3. Auto-save ke LocalStorage setiap ada perubahan state
+  // Helper untuk menyimpan state & mengabari parent (App.tsx)
+  const persistAndNotify = (newState: StopwatchState | null) => {
+    saveActiveStopwatch(newState);
+    if (onStateChange) {
+      onStateChange(newState);
+    }
+  };
+
+  // 3. Auto-save ke LocalStorage dan notify App.tsx setiap ada perubahan state
   useEffect(() => {
-    saveActiveStopwatch({
-      elapsedTime,
-      isRunning,
-      startedAt: isRunning ? startedAtRef.current : null,
-      pausedAt: !isRunning && elapsedTime > 0 ? Date.now() : null,
-      laps,
-    });
+    const currentState: StopwatchState | null = (elapsedTime === 0 && !isRunning && laps.length === 0)
+      ? null
+      : {
+          elapsedTime,
+          isRunning,
+          startedAt: isRunning ? startedAtRef.current : null,
+          pausedAt: !isRunning && elapsedTime > 0 ? Date.now() : null,
+          laps,
+        };
+
+    persistAndNotify(currentState);
   }, [elapsedTime, isRunning, laps]);
 
   // 4. Loop Animasi Utama (requestAnimationFrame)
@@ -135,7 +150,7 @@ export const StopwatchDisplay: React.FC<StopwatchDisplayProps> = ({
     };
 
     setStopwatchState(resetState);
-    saveActiveStopwatch(null);
+    persistAndNotify(null);
   };
 
   const handleLap = () => {
